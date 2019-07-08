@@ -9,7 +9,7 @@ public class RestConstants {
     public static final String RESOURCE_CATEGORY = "/categories";
     public static final String RESOURCE_ID = "/{id}";
     public static final String RESOURCE_NUMBER = "/{number}";
-    public static final String RESOURCE_ACTORS = "/actors";
+    public static final String RESOURCE_ARTISTS = "/artists";
 
 
 
