@@ -1,9 +1,11 @@
 package com.jordi.spotify.services.impl;
 
 import com.jordi.spotify.entities.Artist;
+import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.ArtistRest;
+import com.jordi.spotify.json.artist.ArtistCreateRest;
 import com.jordi.spotify.repositories.ArtistRepository;
 import org.junit.Before;
 import org.junit.Rule;
@@ -105,6 +107,38 @@ public class ArtistServiceImplTest {
 
         // then
         artistService.findById(1L);
+    }
+
+    @Test
+    public void createArtistShouldBeOk() throws SpotifyException {
+        // given
+        ArtistCreateRest artistCreateRest = new ArtistCreateRest();
+        artistCreateRest.setName("Oasis");
+
+        Artist artist = new Artist(2L, "Oasis");
+
+        // when
+        Mockito.when(artistRepository.save(Mockito.any(Artist.class))).thenReturn(artist);
+
+        // then
+        ArtistRest result = artistService.createArtist(artistCreateRest);
+        assertNotNull(result);
+        assertNotNull(result.getId());
+        assertEquals(artistCreateRest.getName(), result.getName());
+    }
+
+    @Test
+    public void createArtistAlreadyExists() throws SpotifyException {
+        // given
+        expectedException.expect(DuplicateEntryException.class);
+        expectedException.expectMessage("ARTIST ALREADY EXIST - An artist with the same name does already exist");
+//        Optional<Artist> alreadyExistingArtist = Optional.of(new Artist(1L, "Oasis"));
+
+        //when
+        Mockito.when(artistRepository.existsByName(any(String.class))).thenReturn(true);
+
+        // then
+        artistService.createArtist(new ArtistCreateRest("Oasis"));
     }
 
 }

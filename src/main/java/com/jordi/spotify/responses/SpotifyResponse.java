@@ -1,6 +1,7 @@
 package com.jordi.spotify.responses;
 
 import java.io.Serializable;
+import org.springframework.http.HttpHeaders;
 
 public class SpotifyResponse<T> implements Serializable {
 
@@ -8,6 +9,7 @@ public class SpotifyResponse<T> implements Serializable {
 	private String code;
 	private String message;
 	private T data;
+
 
 	private static final long serialVersionUID = 7302319210373510173L;
 

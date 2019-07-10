@@ -1,9 +1,11 @@
 package com.jordi.spotify.services.impl;
 
 import com.jordi.spotify.entities.Artist;
+import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.ArtistRest;
+import com.jordi.spotify.json.artist.ArtistCreateRest;
 import com.jordi.spotify.repositories.ArtistRepository;
 import com.jordi.spotify.services.ArtistService;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
@@ -31,6 +33,25 @@ public class ArtistServiceImpl implements ArtistService {
     public ArtistRest findById(Long id) throws SpotifyException {
         return toRest(getArtistOrThrow(id));
     }
+
+    @Override
+    public ArtistRest createArtist(ArtistCreateRest createdArtist) throws SpotifyException {
+        if (artistRepository.existsByName(createdArtist.getName())) {
+            throw new DuplicateEntryException(ExceptionConstants.MESSAGE_EXISTING_ARTIST);
+        }
+        Artist artist = new Artist();
+        artist.setName(createdArtist.getName());
+
+        Artist newArtist = artistRepository.save(artist);
+
+        return new ArtistRest(newArtist.getId(), newArtist.getName());
+    }
+
+    private boolean itExists(ArtistCreateRest createdArtist) {
+        return artistRepository.existsByName(createdArtist.getName());
+    }
+
+    ;
 
 
 
