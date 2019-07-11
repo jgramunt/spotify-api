@@ -16,4 +16,6 @@ public interface ArtistService {
 
     ArtistRest updateArtist(Long id, ArtistRest updatedArtistInfoRest) throws SpotifyException;
 
+    String deleteArtist(Long id) throws SpotifyException;
+
 }

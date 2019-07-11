@@ -56,6 +56,12 @@ public class ArtistServiceImpl implements ArtistService {
         return toRest(finalArtist);
     }
 
+    @Override
+    public String deleteArtist(Long id) throws SpotifyException {
+        Artist artistToDelete = getArtistOrThrow(id);
+        artistRepository.delete(artistToDelete);
+        return "Artist deleted";
+    }
 
     // PRIVATE
 

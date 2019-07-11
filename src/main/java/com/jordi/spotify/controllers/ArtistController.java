@@ -17,4 +17,6 @@ public interface ArtistController {
     SpotifyResponse<ArtistRest> createArtist(ArtistCreateRest artistCreateRest) throws SpotifyException, URISyntaxException;
 
     SpotifyResponse<ArtistRest> updateArtist(Long id, ArtistRest updatedArtistInfo) throws SpotifyException;
+
+    SpotifyResponse<String> deleteArtist(Long id) throws SpotifyException;
 }

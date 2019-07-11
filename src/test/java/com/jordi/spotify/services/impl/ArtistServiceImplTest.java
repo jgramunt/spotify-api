@@ -158,7 +158,39 @@ public class ArtistServiceImplTest {
         assertNotNull(result);
         assertEquals(updatedArtist.getId(), result.getId());
         assertEquals(updatedArtist.getName(), result.getName());
+    }
 
+    @Test
+    public void updatedArtistNotFound() throws SpotifyException {
+        // given
+        expectedException.expect(NotFoundException.class);
+        expectedException.expectMessage("NONEXISTENT ARTIST - Artist does not exist");
+
+        // then
+        artistService.updateArtist(1L, new ArtistRest());
+    }
+
+    @Test
+    public void deleteArtistWorksFine() throws SpotifyException {
+        // when
+        Mockito.when(artistRepository.findById(1L)).thenReturn(Optional.of(new Artist()));
+
+        // then
+        String result = artistService.deleteArtist(1L);
+        assertNotNull(result);
+        assertEquals("Artist deleted", result);
+    }
+    @Test
+    public void deleteArtistNotFound() throws SpotifyException {
+        // given
+        expectedException.expect(NotFoundException.class);
+        expectedException.expectMessage("NONEXISTENT ARTIST - Artist does not exist");
+
+        // when
+        Mockito.when(artistRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // then
+        artistService.deleteArtist(1L);
     }
 
 }

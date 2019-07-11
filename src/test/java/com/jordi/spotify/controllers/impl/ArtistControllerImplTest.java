@@ -163,6 +163,48 @@ public class ArtistControllerImplTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
+    @Test
+    public void updateArtistNotFound() throws Exception {
+        // given
+        ArtistRest modifiedArtist = new ArtistRest();
+        modifiedArtist.setName("The Beatles");
+
+        // when
+        Mockito.when(artistService.updateArtist(any(), any())).thenThrow(new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ARTIST));
+
+        // then
+        mockMvc.perform(patch(appversion + "artists/1").contentType(MediaType.APPLICATION_JSON).content(asJsonString(modifiedArtist)))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status").value("ERROR"))
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value("NONEXISTENT ARTIST - Artist does not exist"));
+
+    }
+
+    @Test
+    public void deleteArtistWorksFine() throws Exception {
+
+        // when
+        Mockito.when(artistService.deleteArtist(any())).thenReturn("Artist deleted");
+        // then
+        mockMvc.perform(delete(appversion + "artists/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value("NO CONTENT"))
+                .andExpect(jsonPath("$.code").value("204"))
+                .andExpect(jsonPath("$.message").value("Artist deleted"));
+    }
+
+    @Test
+    public void deleteArtistNotFound() throws Exception {
+        // when
+        Mockito.when(artistService.deleteArtist(any())).thenThrow(new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ARTIST));
+
+        // then
+        mockMvc.perform(delete(appversion + "artists/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status").value("ERROR"))
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value("NONEXISTENT ARTIST - Artist does not exist"));
+    }
 
     // PRIVATE
     private String asJsonString(Object object) throws JsonProcessingException {

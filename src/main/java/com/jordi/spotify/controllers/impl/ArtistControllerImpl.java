@@ -56,4 +56,11 @@ public class ArtistControllerImpl implements ArtistController {
                 artistService.updateArtist(id, updatedArtistInfo));
     }
 
+    @Override
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(value = RestConstants.RESOURCE_ID)
+    public SpotifyResponse<String> deleteArtist(@PathVariable Long id) throws SpotifyException {
+        return new SpotifyResponse<>(CommonConstants.NO_CONTENT, String.valueOf(HttpStatus.NO_CONTENT.value()),
+                artistService.deleteArtist(id));
+    }
 }
