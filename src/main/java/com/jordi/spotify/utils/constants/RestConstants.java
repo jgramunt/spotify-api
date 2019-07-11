@@ -10,6 +10,7 @@ public class RestConstants {
     public static final String RESOURCE_ID = "/{id}";
     public static final String RESOURCE_NUMBER = "/{number}";
     public static final String RESOURCE_ARTISTS = "/artists";
+    public static final String RESOURCE_ALBUMS = "/albums";
 
 
 
