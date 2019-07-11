@@ -13,4 +13,7 @@ public interface ArtistService {
     ArtistRest findById(Long id) throws SpotifyException;
 
     ArtistRest createArtist(ArtistCreateRest createdArtist) throws SpotifyException;
+
+    ArtistRest updateArtist(Long id, ArtistRest updatedArtistInfoRest) throws SpotifyException;
+
 }

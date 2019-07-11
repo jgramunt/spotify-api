@@ -47,12 +47,14 @@ public class ArtistServiceImpl implements ArtistService {
         return new ArtistRest(newArtist.getId(), newArtist.getName());
     }
 
-    private boolean itExists(ArtistCreateRest createdArtist) {
-        return artistRepository.existsByName(createdArtist.getName());
+    @Override
+    public ArtistRest updateArtist(Long id, ArtistRest updatedArtistInfoRest) throws SpotifyException {
+        Artist updatedArtist = updateArtistEntity(getArtistOrThrow(id), updatedArtistInfoRest);
+
+        Artist finalArtist = artistRepository.save(updatedArtist);
+
+        return toRest(finalArtist);
     }
-
-    ;
-
 
 
     // PRIVATE
@@ -67,6 +69,16 @@ public class ArtistServiceImpl implements ArtistService {
     private Artist getArtistOrThrow(Long id) throws NotFoundException {
         return artistRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ARTIST));
+    }
+
+    private Artist updateArtistEntity(Artist artistToUpdate, ArtistRest updatedArtistInfoRest) {
+        if (updatedArtistInfoRest.getId() != null) {
+            artistToUpdate.setId(updatedArtistInfoRest.getId());
+        }
+        if (updatedArtistInfoRest.getName() != null) {
+            artistToUpdate.setName(updatedArtistInfoRest.getName());
+        }
+        return artistToUpdate;
     }
 
 }

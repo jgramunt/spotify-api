@@ -141,4 +141,24 @@ public class ArtistServiceImplTest {
         artistService.createArtist(new ArtistCreateRest("Oasis"));
     }
 
+    @Test
+    public void updateArtistWorksFine() throws SpotifyException {
+        // given
+        ArtistRest updatedArtistInfoRest = new ArtistRest(null, "The Beatles");
+        Artist artistToUpdate = new Artist(2L, "Oasis");
+        Artist artistUpdated = new Artist(2L, "The Beatles");
+        ArtistRest updatedArtist = new ArtistRest(2L, "The Beatles");
+
+        // when
+        Mockito.when(artistRepository.findById(2L)).thenReturn(Optional.of(artistToUpdate));
+        Mockito.when(artistRepository.save(any())).thenReturn(artistUpdated);
+
+        // then
+        ArtistRest result = artistService.updateArtist(2L, updatedArtistInfoRest);
+        assertNotNull(result);
+        assertEquals(updatedArtist.getId(), result.getId());
+        assertEquals(updatedArtist.getName(), result.getName());
+
+    }
+
 }

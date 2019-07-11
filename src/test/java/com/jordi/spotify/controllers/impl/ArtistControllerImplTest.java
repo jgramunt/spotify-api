@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jordi.spotify.controllers.ArtistController;
+import com.jordi.spotify.entities.Artist;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
+import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.ArtistRest;
 import com.jordi.spotify.json.artist.ArtistCreateRest;
 import com.jordi.spotify.services.ArtistService;
@@ -28,8 +30,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
@@ -129,16 +130,37 @@ public class ArtistControllerImplTest {
 
     @Test
     public void createArtistFails() throws Exception {
-
-
         // when
         Mockito.when(artistService.createArtist(any())).thenThrow(new DuplicateEntryException(ExceptionConstants.MESSAGE_EXISTING_ARTIST));
 
+        //then
         mockMvc.perform(post(appversion + "artists").contentType(MediaType.APPLICATION_JSON).content(asJsonString(new ArtistCreateRest())))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.status").value("ERROR"))
                 .andExpect(jsonPath("$.code").value("409"))
                 .andExpect(jsonPath("$.message").value("ARTIST ALREADY EXIST - An artist with the same name does already exist"));
+    }
+
+    @Test
+    public void updateArtistWorksFine() throws Exception {
+        // given
+        ArtistRest modifiedArtist = new ArtistRest();
+        modifiedArtist.setName("The Beatles");
+
+        ArtistRest savedModifiedArtist = new ArtistRest(1L, "The Beatles");
+
+        // when
+        Mockito.when(artistService.updateArtist(any(), any())).thenReturn(savedModifiedArtist);
+
+        // then
+        mockMvc.perform(patch(appversion + "artists/1").contentType(MediaType.APPLICATION_JSON).content(asJsonString(modifiedArtist)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("Success"))
+                .andExpect(jsonPath("$.code").value("200 OK"))
+                .andExpect(jsonPath("$.message").value("OK"))
+                .andExpect(jsonPath("$.data.id").value("1"))
+                .andExpect(jsonPath("$.data.name").value("The Beatles"))
+                .andDo(MockMvcResultHandlers.print());
     }
 
 

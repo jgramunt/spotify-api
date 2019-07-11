@@ -44,9 +44,16 @@ public class ArtistControllerImpl implements ArtistController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public SpotifyResponse<ArtistRest> createArtist(@RequestHeader @RequestBody @Valid ArtistCreateRest artistCreateRest) throws SpotifyException {
-        ArtistRest createdArtist = artistService.createArtist(artistCreateRest);
         return new SpotifyResponse<>(CommonConstants.SUCCESS, String.valueOf(HttpStatus.OK), CommonConstants.OK,
-                createdArtist);
+                artistService.createArtist(artistCreateRest));
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping(value = RestConstants.RESOURCE_ID)
+    public SpotifyResponse<ArtistRest> updateArtist(@PathVariable Long id, @RequestBody ArtistRest updatedArtistInfo) throws SpotifyException {
+        return new SpotifyResponse<>(CommonConstants.SUCCESS, String.valueOf(HttpStatus.OK), CommonConstants.OK,
+                artistService.updateArtist(id, updatedArtistInfo));
     }
 
 }
