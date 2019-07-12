@@ -63,8 +63,8 @@ public class ArtistServiceImplTest {
     public void getAllGetsRestList() throws SpotifyException {
         // given
         List<Artist> artistList = new ArrayList<>();
-        artistList.add(new Artist((long) 1, "Oasis"));
-        artistList.add(new Artist((long) 2, "Eagles"));
+        artistList.add(new Artist(1L, "Oasis"));
+        artistList.add(new Artist(2L, "Eagles"));
 
         // when
         Mockito.when(artistRepository.findAll()).thenReturn(artistList);
