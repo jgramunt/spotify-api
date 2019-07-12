@@ -1,17 +1,21 @@
 package com.jordi.spotify.controllers.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jordi.spotify.controllers.AlbumController;
-import com.jordi.spotify.controllers.ArtistController;
 import com.jordi.spotify.entities.Album;
+import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.json.AlbumRest;
+import com.jordi.spotify.json.album.AlbumCreateRest;
+import com.jordi.spotify.json.artist.ArtistCreateRest;
 import com.jordi.spotify.services.AlbumService;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,10 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(AlbumController.class)
@@ -81,7 +86,7 @@ public class AlbumControllerImplTest {
         albumRestList.add(albumRest2);
 
         // when
-        Mockito.when(albumService.getAll()).thenReturn(albumRestList);
+        Mockito.when(albumService.getAlbums()).thenReturn(albumRestList);
 
         // then
         mockMvc.perform(get(appversion + "albums").contentType(MediaType.APPLICATION_JSON))
@@ -101,7 +106,7 @@ public class AlbumControllerImplTest {
         AlbumRest albumRest = new AlbumRest(2L, "Let It Be");
 
         // when
-        Mockito.when(albumService.getById(2L)).thenReturn(albumRest);
+        Mockito.when(albumService.getAlbumById(2L)).thenReturn(albumRest);
 
         // then
         mockMvc.perform(get(appversion + "albums/2").contentType(MediaType.APPLICATION_JSON))
@@ -115,7 +120,7 @@ public class AlbumControllerImplTest {
     @Test
     public void getByIdNotFound() throws Exception {
         // when
-        Mockito.when(albumService.getById(any())).thenThrow(new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ALBUM));
+        Mockito.when(albumService.getAlbumById(any())).thenThrow(new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ALBUM));
 
         //then
         mockMvc.perform(get(appversion + "albums/1").contentType(MediaType.APPLICATION_JSON))
@@ -123,6 +128,47 @@ public class AlbumControllerImplTest {
                 .andExpect(jsonPath("$.code").value("404"))
                 .andExpect(jsonPath("$.message").value("NONEXISTENT ALBUM - Album does not exist"));
 
+    }
+
+    @Test
+    public void createAlbumWorksFine() throws Exception {
+        // given
+        AlbumCreateRest albumCreateRest = new AlbumCreateRest("Definitely Maybe");
+        AlbumRest result = new AlbumRest(2L, "Definitely Maybe");
+
+        // when
+        Mockito.when(albumService.createAlbum(any())).thenReturn(result);
+
+        // then
+        mockMvc.perform(post(appversion + "albums").contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(albumCreateRest)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.id").value("2"))
+                .andExpect(jsonPath("$.data.name").value("Definitely Maybe"));
+    }
+
+    @Test
+    public void createArtistFails() throws Exception {
+        // when
+        Mockito.when(albumService.createAlbum(any())).thenThrow(new DuplicateEntryException(ExceptionConstants.MESSAGE_EXISTING_ALBUM));
+
+        //then
+        mockMvc.perform(post(appversion + "albums").contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(new AlbumCreateRest())))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status").value("ERROR"))
+                .andExpect(jsonPath("$.code").value("409"))
+                .andExpect(jsonPath("$.message").value("ALBUM ALREADY EXIST - An album with the same name does already exist"));
+    }
+
+    // PRIVATE
+    private String asJsonString(Object object) {
+        try {
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            return ow.writeValueAsString(object);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

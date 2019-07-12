@@ -1,9 +1,11 @@
 package com.jordi.spotify.services.impl;
 
 import com.jordi.spotify.entities.Album;
+import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.AlbumRest;
+import com.jordi.spotify.json.album.AlbumCreateRest;
 import com.jordi.spotify.repositories.AlbumRepository;
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,7 +52,7 @@ public class AlbumServiceImplTest {
         Mockito.when(albumRepository.findAll()).thenReturn(albumList);
 
         // assert
-        List<AlbumRest> result = albumService.getAll();
+        List<AlbumRest> result = albumService.getAlbums();
         assertNotNull(result);
         assertEquals(0, result.size());
     }
@@ -66,7 +68,7 @@ public class AlbumServiceImplTest {
         Mockito.when(albumRepository.findAll()).thenReturn(albumList);
 
         // then
-        List<AlbumRest> result = albumService.getAll();
+        List<AlbumRest> result = albumService.getAlbums();
         assertNotNull(result);
         assertEquals(albumList.get(0).getId(), result.get(0).getId());
         assertEquals(albumList.get(0).getName(), result.get(0).getName());
@@ -84,7 +86,7 @@ public class AlbumServiceImplTest {
         Mockito.when(albumRepository.findById(2L)).thenReturn(java.util.Optional.ofNullable(album));
 
         // then
-        AlbumRest result = albumService.getById(2L);
+        AlbumRest result = albumService.getAlbumById(2L);
         assertNotNull(result);
         assertEquals(albumRest.getId(), result.getId());
         assertEquals(albumRest.getName(), result.getName());
@@ -99,6 +101,36 @@ public class AlbumServiceImplTest {
         Mockito.when(albumRepository.findById(any())).thenReturn(Optional.empty());
 
         // then
-        albumService.getById(1L);
+        albumService.getAlbumById(1L);
+    }
+
+    @Test
+    public void createAlbumWorksFine() throws SpotifyException {
+        // given
+        AlbumCreateRest albumCreateRest = new AlbumCreateRest("Let It Be");
+        Album album = new Album(2L, "Let It Be");
+        AlbumRest albumRest = new AlbumRest(2L, "Let It Be");
+
+        // when
+        Mockito.when(albumRepository.save(any(Album.class))).thenReturn(album);
+
+        // then
+        AlbumRest result = albumService.createAlbum(albumCreateRest);
+        assertNotNull(result);
+        assertEquals(albumRest.getId(), result.getId());
+        assertEquals(albumRest.getName(), result.getName());
+    }
+
+    @Test
+    public void createAlbumFails() throws SpotifyException {
+        // given
+        expectedException.expect(DuplicateEntryException.class);
+        expectedException.expectMessage("ALBUM ALREADY EXIST - An album with the same name does already exist");
+
+        // when
+        Mockito.when(albumRepository.existsByName(any())).thenReturn(true);
+
+        // then
+        albumService.createAlbum(new AlbumCreateRest("Let It Be"));
     }
 }
