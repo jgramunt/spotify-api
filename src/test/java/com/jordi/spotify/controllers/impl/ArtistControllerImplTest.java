@@ -124,7 +124,10 @@ public class ArtistControllerImplTest {
         // then
         mockMvc.perform(post(appversion + "artists").contentType(MediaType.APPLICATION_JSON).content(asJsonString(createdArtist)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.id").isNotEmpty())
+                .andExpect(jsonPath("$.status").value("CREATED"))
+                .andExpect(jsonPath("$.code").value("201"))
+                .andExpect(jsonPath("$.message").value("Success"))
+                .andExpect(jsonPath("$.data.id").value("2"))
                 .andExpect(jsonPath("$.data.name").value("Oasis"));
     }
 

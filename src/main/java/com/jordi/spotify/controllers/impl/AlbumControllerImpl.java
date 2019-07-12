@@ -43,7 +43,7 @@ public class AlbumControllerImpl implements AlbumController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public SpotifyResponse<AlbumRest> createAlbum(@RequestBody @Valid AlbumCreateRest albumCreateRest) throws SpotifyException {
-        return new SpotifyResponse<>(CommonConstants.SUCCESS, String.valueOf(HttpStatus.OK), CommonConstants.OK,
+        return new SpotifyResponse<>(CommonConstants.CREATED, String.valueOf(HttpStatus.CREATED.value()), CommonConstants.SUCCESS,
                 albumService.createAlbum(albumCreateRest));
     }
 

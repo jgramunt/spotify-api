@@ -143,6 +143,9 @@ public class AlbumControllerImplTest {
         mockMvc.perform(post(appversion + "albums").contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(albumCreateRest)))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("CREATED"))
+                .andExpect(jsonPath("$.code").value("201"))
+                .andExpect(jsonPath("$.message").value("Success"))
                 .andExpect(jsonPath("$.data.id").value("2"))
                 .andExpect(jsonPath("$.data.name").value("Definitely Maybe"));
     }
