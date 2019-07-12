@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface AlbumService {
     List<AlbumRest> getAll() throws SpotifyException;
+
+    AlbumRest getById(Long id) throws SpotifyException;
 }

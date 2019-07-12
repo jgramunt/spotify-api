@@ -3,12 +3,15 @@ package com.jordi.spotify.controllers.impl;
 import com.jordi.spotify.controllers.AlbumController;
 import com.jordi.spotify.controllers.ArtistController;
 import com.jordi.spotify.entities.Album;
+import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.json.AlbumRest;
 import com.jordi.spotify.services.AlbumService;
+import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,6 +25,7 @@ import java.util.List;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -89,6 +93,36 @@ public class AlbumControllerImplTest {
                 .andExpect(jsonPath("$.data[0].name").value("Definitely Maybe"))
                 .andExpect(jsonPath("$.data[1].id").value("2"))
                 .andExpect(jsonPath("$.data[1].name").value("Let It Be"));
+    }
+
+    @Test
+    public void getByIdWorksFine() throws Exception {
+        // given
+        AlbumRest albumRest = new AlbumRest(2L, "Let It Be");
+
+        // when
+        Mockito.when(albumService.getById(2L)).thenReturn(albumRest);
+
+        // then
+        mockMvc.perform(get(appversion + "albums/2").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value("Success"))
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("OK"))
+                .andExpect(jsonPath("$.data.id").value("2"))
+                .andExpect(jsonPath("$.data.name").value("Let It Be"));
+    }
+
+    @Test
+    public void getByIdNotFound() throws Exception {
+        // when
+        Mockito.when(albumService.getById(any())).thenThrow(new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ALBUM));
+
+        //then
+        mockMvc.perform(get(appversion + "albums/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value("ERROR"))
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value("NONEXISTENT ALBUM - Album does not exist"));
+
     }
 
 }

@@ -10,4 +10,6 @@ public interface AlbumController {
 
     SpotifyResponse<List<AlbumRest>> getAll() throws SpotifyException;
 
+    SpotifyResponse<AlbumRest> getById(Long id) throws SpotifyException;
+
 }
