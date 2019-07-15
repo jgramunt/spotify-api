@@ -15,4 +15,6 @@ public interface AlbumService {
 
     AlbumRest updateAlbum(Long id, AlbumRest albumRest) throws SpotifyException;
 
+    String deleteAlbum(Long id) throws SpotifyException;
+
 }

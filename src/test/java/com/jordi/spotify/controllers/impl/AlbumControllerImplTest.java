@@ -206,6 +206,30 @@ public class AlbumControllerImplTest {
                 .andExpect(jsonPath("$.message").value("NONEXISTENT ALBUM - Album does not exist"));
     }
 
+    @Test
+    public void deleteAlbumWorksFine() throws Exception {
+        // when
+        Mockito.when(albumService.deleteAlbum(any())).thenReturn("Album deleted");
+
+        // then
+        mockMvc.perform(delete(appversion + "albums/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value("NO CONTENT"))
+                .andExpect(jsonPath("$.code").value("204"))
+                .andExpect(jsonPath("$.message").value("Album deleted"));
+    }
+
+    @Test
+    public void deleteAlbumNotFound() throws Exception {
+        // when
+        Mockito.when(albumService.deleteAlbum(any())).thenThrow(new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ALBUM));
+
+        // then
+        mockMvc.perform(delete(appversion + "albums/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status").value("ERROR"))
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value("NONEXISTENT ALBUM - Album does not exist"));
+    }
 
 
     // PRIVATE

@@ -55,4 +55,12 @@ public class AlbumControllerImpl implements AlbumController {
                 albumService.updateAlbum(id, albumRest));
     }
 
+    @Override
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(value = RestConstants.RESOURCE_ID, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SpotifyResponse<String> deleteAlbum(@PathVariable Long id) throws SpotifyException {
+        return new SpotifyResponse<>(CommonConstants.NO_CONTENT, String.valueOf(HttpStatus.NO_CONTENT.value()),
+                albumService.deleteAlbum(id));
+    }
+
 }

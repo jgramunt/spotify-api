@@ -167,4 +167,28 @@ public class AlbumServiceImplTest {
         // then
         albumService.updateAlbum(1L, new AlbumRest());
     }
+
+    @Test
+    public void deleteAlbumWorksFine() throws SpotifyException {
+        // when
+        Mockito.when(albumRepository.findById(1L)).thenReturn(Optional.of(new Album()));
+
+        // then
+        String result = albumService.deleteAlbum(1L);
+        assertNotNull(result);
+        assertEquals("Album deleted", result);
+    }
+
+    @Test
+    public void deleteAlbumNotFound() throws SpotifyException {
+        // given
+        expectedException.expect(NotFoundException.class);
+        expectedException.expectMessage("NONEXISTENT ALBUM - Album does not exist");
+
+        // when
+        Mockito.when(albumRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // then
+        albumService.deleteAlbum(1L);
+    }
 }

@@ -20,4 +20,5 @@ public interface AlbumController {
 
     SpotifyResponse<AlbumRest> updateAlbum(Long id, AlbumRest albumRest) throws SpotifyException;
 
+    SpotifyResponse<String> deleteAlbum(Long id) throws SpotifyException;
 }

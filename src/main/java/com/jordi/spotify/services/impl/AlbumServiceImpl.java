@@ -50,6 +50,13 @@ public class AlbumServiceImpl implements AlbumService {
         return toRest(savedUpdatedAlbum);
     }
 
+    @Override
+    public String deleteAlbum(Long id) throws SpotifyException {
+        Album album = getAlbumOrThrow(id);
+        albumRepository.delete(album);
+        return "Album deleted";
+    }
+
 
     // PRIVATE
 
