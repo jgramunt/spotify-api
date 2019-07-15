@@ -45,7 +45,9 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public AlbumRest updateAlbum(Long id, AlbumRest albumRest) throws SpotifyException {
-        return new AlbumRest();
+        Album updatedAlbum = updateAlbumEntity(getAlbumOrThrow(id), albumRest);
+        Album savedUpdatedAlbum = albumRepository.save(updatedAlbum);
+        return toRest(savedUpdatedAlbum);
     }
 
 
@@ -67,5 +69,15 @@ public class AlbumServiceImpl implements AlbumService {
         Album album = new Album();
         album.setName(albumCreateRest.getName());
         return album;
+    }
+
+    private Album updateAlbumEntity(Album albumToUpdate, AlbumRest updatedAlbumRest) {
+        if (updatedAlbumRest.getId() != null) {
+            albumToUpdate.setId(updatedAlbumRest.getId());
+        }
+        if (updatedAlbumRest.getName() != null) {
+            albumToUpdate.setName(updatedAlbumRest.getName());
+        }
+        return albumToUpdate;
     }
 }

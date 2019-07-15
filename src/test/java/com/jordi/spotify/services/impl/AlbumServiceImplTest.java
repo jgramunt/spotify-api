@@ -5,8 +5,10 @@ import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.AlbumRest;
+import com.jordi.spotify.json.ArtistRest;
 import com.jordi.spotify.json.album.AlbumCreateRest;
 import com.jordi.spotify.repositories.AlbumRepository;
+import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -132,5 +134,37 @@ public class AlbumServiceImplTest {
 
         // then
         albumService.createAlbum(new AlbumCreateRest("Let It Be"));
+    }
+
+    @Test
+    public void updateAlbumWorksFine() throws SpotifyException {
+        // given
+        AlbumRest updatedArtistRest = new AlbumRest(null, "Let It Be");
+        Album albumToUpdate = new Album(1L, "Definitely Maybe");
+        Album updatedAlbum = new Album(1L, "Let It Be");
+        AlbumRest updatedAlbumRest = new AlbumRest(1L, "Let It Be");
+
+        // when
+        Mockito.when(albumRepository.findById(any())).thenReturn(Optional.of(albumToUpdate));
+        Mockito.when(albumRepository.save(any())).thenReturn(updatedAlbum);
+
+        // then
+        AlbumRest result = albumService.updateAlbum(1L, updatedAlbumRest);
+        assertNotNull(result);
+        assertEquals(updatedAlbumRest.getId(), result.getId());
+        assertEquals(updatedAlbumRest.getName(), result.getName());
+    }
+
+    @Test
+    public void updatedAlbumNotFound() throws SpotifyException {
+        // given
+        expectedException.expect(NotFoundException.class);
+        expectedException.expectMessage("NONEXISTENT ALBUM - Album does not exist");
+
+        // when
+        Mockito.when(albumRepository.findById(any())).thenReturn(Optional.empty());
+
+        // then
+        albumService.updateAlbum(1L, new AlbumRest());
     }
 }
