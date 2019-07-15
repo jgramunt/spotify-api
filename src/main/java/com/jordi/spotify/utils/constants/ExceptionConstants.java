@@ -6,11 +6,14 @@ public class ExceptionConstants {
 
     public static final String MESSAGE_INEXISTENT_SEASON = "SEASON INEXISTENT - Season does not exist";
     public static final String MESSAGE_INEXISTENT_CHAPTER = "CHAPTER INEXISTENT - Chapter does not exist";
-    public static final String MESSAGE_NONEXISTENT_ARTIST = "NONEXISTENT ARTIST - Artist does not exist";
     public static final String MESSAGE_INEXISTENT_CATEGORY = "CATEGORY INEXISTENT - Category does not exist";
     public static final String MESSAGE_INEXISTENT_TV_SHOW = "TV SHOW INEXISTENT - Category does not exist";
 
+    public static final String MESSAGE_NONEXISTENT_ARTIST = "NONEXISTENT ARTIST - Artist does not exist";
     public static final String MESSAGE_EXISTING_ARTIST = "ARTIST ALREADY EXIST - An artist with the same name does already exist";
+    public static final String MESSAGE_NONEXISTENT_ALBUM = "NONEXISTENT ALBUM - Album does not exist";
+    public static final String MESSAGE_EXISTING_ALBUM = "ALBUM ALREADY EXIST - An album with the same name does already exist";
+
 
 
 

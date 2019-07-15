@@ -11,23 +11,19 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
 public class ArtistServiceImplTest {
@@ -39,7 +35,7 @@ public class ArtistServiceImplTest {
     ArtistServiceImpl artistService;
 
     @Before
-    public void init(){
+    public void init() {
         MockitoAnnotations.initMocks(this);
     }
 
@@ -63,8 +59,8 @@ public class ArtistServiceImplTest {
     public void getAllGetsRestList() throws SpotifyException {
         // given
         List<Artist> artistList = new ArrayList<>();
-        artistList.add(new Artist((long) 1, "Oasis"));
-        artistList.add(new Artist((long) 2, "Eagles"));
+        artistList.add(new Artist(1L, "Oasis"));
+        artistList.add(new Artist(2L, "Eagles"));
 
         // when
         Mockito.when(artistRepository.findAll()).thenReturn(artistList);
@@ -180,6 +176,7 @@ public class ArtistServiceImplTest {
         assertNotNull(result);
         assertEquals("Artist deleted", result);
     }
+
     @Test
     public void deleteArtistNotFound() throws SpotifyException {
         // given
@@ -192,5 +189,6 @@ public class ArtistServiceImplTest {
         // then
         artistService.deleteArtist(1L);
     }
+
 
 }
