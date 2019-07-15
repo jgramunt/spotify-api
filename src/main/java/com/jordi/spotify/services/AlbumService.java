@@ -13,4 +13,6 @@ public interface AlbumService {
 
     AlbumRest createAlbum(AlbumCreateRest albumCreateRest) throws SpotifyException;
 
+    AlbumRest updateAlbum(Long id, AlbumRest albumRest) throws SpotifyException;
+
 }

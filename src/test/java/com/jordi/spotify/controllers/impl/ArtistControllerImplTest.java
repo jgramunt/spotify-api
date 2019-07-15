@@ -159,11 +159,10 @@ public class ArtistControllerImplTest {
         mockMvc.perform(patch(appversion + "artists/1").contentType(MediaType.APPLICATION_JSON).content(asJsonString(modifiedArtist)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("Success"))
-                .andExpect(jsonPath("$.code").value("200 OK"))
+                .andExpect(jsonPath("$.code").value("200"))
                 .andExpect(jsonPath("$.message").value("OK"))
                 .andExpect(jsonPath("$.data.id").value("1"))
-                .andExpect(jsonPath("$.data.name").value("The Beatles"))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(jsonPath("$.data.name").value("The Beatles"));
     }
 
     @Test

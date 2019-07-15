@@ -9,13 +9,10 @@ import com.jordi.spotify.json.AlbumRest;
 import com.jordi.spotify.json.album.AlbumCreateRest;
 import com.jordi.spotify.repositories.AlbumRepository;
 import com.jordi.spotify.services.AlbumService;
-import com.jordi.spotify.utils.constants.CommonConstants;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
-import com.jordi.spotify.utils.constants.RestConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +43,10 @@ public class AlbumServiceImpl implements AlbumService {
         return toRest(savedEntity);
     }
 
+    @Override
+    public AlbumRest updateAlbum(Long id, AlbumRest albumRest) throws SpotifyException {
+        return new AlbumRest();
+    }
 
 
     // PRIVATE

@@ -27,7 +27,7 @@ public class AlbumControllerImpl implements AlbumController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public SpotifyResponse<List<AlbumRest>> getAlbums() throws SpotifyException {
-        return new SpotifyResponse<>(CommonConstants.SUCCESS, String.valueOf(HttpStatus.OK.value()), CommonConstants.OK,
+        return new SpotifyResponse<>(CommonConstants.OK, String.valueOf(HttpStatus.OK.value()), CommonConstants.SUCCESS,
                 albumService.getAlbums());
     }
 
@@ -35,7 +35,7 @@ public class AlbumControllerImpl implements AlbumController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = RestConstants.RESOURCE_ID, produces = MediaType.APPLICATION_JSON_VALUE)
     public SpotifyResponse<AlbumRest> getAlbumById(@PathVariable Long id) throws SpotifyException {
-        return new SpotifyResponse<>(CommonConstants.SUCCESS, String.valueOf(HttpStatus.OK.value()), CommonConstants.OK,
+        return new SpotifyResponse<>(CommonConstants.OK, String.valueOf(HttpStatus.OK.value()), CommonConstants.SUCCESS,
                 albumService.getAlbumById(id));
     }
 
@@ -47,5 +47,12 @@ public class AlbumControllerImpl implements AlbumController {
                 albumService.createAlbum(albumCreateRest));
     }
 
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping(value = RestConstants.RESOURCE_ID, produces = MediaType.APPLICATION_JSON_VALUE)
+    public SpotifyResponse<AlbumRest> updateAlbum(@PathVariable Long id, @RequestBody @Valid AlbumRest albumRest) throws SpotifyException {
+        return new SpotifyResponse<>(CommonConstants.OK, String.valueOf(HttpStatus.OK.value()), CommonConstants.SUCCESS,
+                albumService.updateAlbum(id, albumRest));
+    }
 
 }
