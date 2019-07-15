@@ -18,7 +18,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping(RestConstants.APPLICATION_NAME + RestConstants.API_VERSION_1 + RestConstants.RESOURCE_ARTISTS)
-
 public class ArtistControllerImpl implements ArtistController {
 
     @Autowired

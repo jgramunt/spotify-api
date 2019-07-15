@@ -1,10 +1,13 @@
 package com.jordi.spotify.entities;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ARTISTS")
-public class Artist {
+public class Artist implements Serializable {
+
+    private static final long serialVersionUID = 2470187958797843966L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
