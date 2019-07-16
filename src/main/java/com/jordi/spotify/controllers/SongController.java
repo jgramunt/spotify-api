@@ -10,4 +10,5 @@ public interface SongController {
 
     SpotifyResponse<List<SongRest>> getSongs() throws SpotifyException;
 
+    SpotifyResponse<SongRest> getSongById(Long id) throws SpotifyException;
 }

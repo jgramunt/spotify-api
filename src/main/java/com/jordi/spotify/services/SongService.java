@@ -9,4 +9,6 @@ public interface SongService {
 
     List<SongRest> getSongs() throws SpotifyException;
 
+    SongRest getSongById(Long id) throws SpotifyException;
+
 }

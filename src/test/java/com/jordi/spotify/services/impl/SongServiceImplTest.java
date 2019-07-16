@@ -1,6 +1,9 @@
 package com.jordi.spotify.services.impl;
 
+import com.jordi.spotify.entities.Album;
+import com.jordi.spotify.entities.Artist;
 import com.jordi.spotify.entities.Song;
+import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.SongRest;
 import com.jordi.spotify.repositories.SongRepository;
@@ -16,8 +19,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 public class SongServiceImplTest {
@@ -62,8 +67,39 @@ public class SongServiceImplTest {
     }
 
     @Test
-    public void getSongByIdWorksFine() {
+    public void getSongByIdWorksFine() throws SpotifyException {
+        // given
+        Artist artist = new Artist(1L, "Electric Light Orchestra");
+        Album album = new Album(1L, "Out Of The Blue");
+        Song song = new Song(1L, "Mr Blue Sky");
+        song.setAlbum(album);
+        song.setArtist(artist);
+        SongRest songRest = new SongRest(1L, "Mr Blue Sky");
+        songRest.setAlbumName(album.getName());
+        songRest.setArtistName(artist.getName());
 
+        // when
+        Mockito.when(songRepository.findById(1L)).thenReturn(java.util.Optional.of(song));
+
+        // then
+        SongRest result = songService.getSongById(1L);
+        assertNotNull(result);
+        assertEquals(songRest.getId(), result.getId());
+        assertEquals(songRest.getName(), result.getName());
+        assertEquals(songRest.getAlbumName(), result.getAlbumName());
+        assertEquals(songRest.getArtistName(), result.getArtistName());
+    }
+
+    @Test
+    public void getSongByIdNotFound() throws SpotifyException {
+        expectedException.expect(NotFoundException.class);
+        expectedException.expectMessage("NONEXISTENT SONG - Song does not exist");
+
+        // when
+        Mockito.when(songRepository.findById(any())).thenReturn(Optional.empty());
+
+        // then
+        songService.getSongById(1L);
     }
 
 }
