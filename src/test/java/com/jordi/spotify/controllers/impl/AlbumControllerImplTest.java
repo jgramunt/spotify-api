@@ -3,14 +3,12 @@ package com.jordi.spotify.controllers.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jordi.spotify.controllers.AlbumController;
-import com.jordi.spotify.entities.Album;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.json.AlbumRest;
 import com.jordi.spotify.json.album.AlbumCreateRest;
 import com.jordi.spotify.services.AlbumService;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -21,7 +19,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,39 +44,13 @@ public class AlbumControllerImplTest {
 
     private String appversion = "/spotify/v1/";
 
-    private Album album;
-    private AlbumRest albumRest;
-
-    private Album album2;
-    private AlbumRest albumRest2;
-
-    private List<AlbumRest> albumRestList;
-
-    private Album albumWithoutId;
-
-
-    @Before
-    public void setup() {
-
-        album = new Album(1L, "Definitely Maybe");
-        albumRest = new AlbumRest(1L, "Definitely Maybe");
-        album2 = new Album(2L, "Let It Be");
-        albumRest2 = new AlbumRest(2L, "Let It Be");
-
-        albumRestList = new ArrayList<>();
-        albumRestList.add(albumRest);
-        albumRestList.add(albumRest2);
-
-        albumWithoutId = new Album();
-        albumWithoutId.setName("Hell Freezes Over");
-    }
 
     @Test
     public void getAlbumsWorksFine() throws Exception {
         // given
-        albumRest = new AlbumRest(1L, "Definitely Maybe");
-        albumRest2 = new AlbumRest(2L, "Let It Be");
-        albumRestList = new ArrayList<>();
+        AlbumRest albumRest = new AlbumRest(1L, "Definitely Maybe");
+        AlbumRest albumRest2 = new AlbumRest(2L, "Let It Be");
+        List<AlbumRest> albumRestList = new ArrayList<>();
         albumRestList.add(albumRest);
         albumRestList.add(albumRest2);
 
