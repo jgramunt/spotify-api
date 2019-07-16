@@ -1,8 +1,12 @@
 package com.jordi.spotify.controllers.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.SongRest;
+import com.jordi.spotify.json.song.CreateSongRest;
 import com.jordi.spotify.services.SongService;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Test;
@@ -15,16 +19,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.HandlerResultMatchers;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.web.HttpRequestHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(SongControllerImpl.class)
@@ -96,4 +99,48 @@ public class SongControllerImplTest {
                 .andExpect(jsonPath("$.message").value("NONEXISTENT SONG - Song does not exist"));
     }
 
+    @Test
+    public void createSongWorksFine() throws Exception {
+        // given
+        CreateSongRest createSongRest = new CreateSongRest("Mr Blue Sky");
+        SongRest songRest = new SongRest(1L, "Mr Blue Sky");
+
+        // when
+        Mockito.when(songService.createSong(any())).thenReturn(songRest);
+
+        // then
+        mockMvc.perform(post(appversion + "songs").contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(createSongRest)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("CREATED"))
+                .andExpect(jsonPath("$.code").value("201"))
+                .andExpect(jsonPath("$.message").value("Success"))
+                .andExpect(jsonPath("$.data.id").value("1"))
+                .andExpect(jsonPath("$.data.name").value("Mr Blue Sky"));
+    }
+
+    @Test
+    public void createSongFails() throws Exception {
+        // when
+        Mockito.when(songService.createSong(any())).thenThrow(new DuplicateEntryException(ExceptionConstants.MESSAGE_EXISTING_SONG));
+
+        // then
+        mockMvc.perform(post(appversion + "songs").contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(new CreateSongRest())))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status").value("ERROR"))
+                .andExpect(jsonPath("$.code").value("409"))
+                .andExpect(jsonPath("$.message").value("SONG ALREADY EXIST - A song with the same name, artist and album does already exist"));
+    }
+
+
+    // PRIVATE
+    private String asJsonString(Object object) {
+        try {
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            return ow.writeValueAsString(object);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

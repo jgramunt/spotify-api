@@ -122,7 +122,7 @@ public class AlbumControllerImplTest {
     }
 
     @Test
-    public void createArtistFails() throws Exception {
+    public void createAlbumFails() throws Exception {
         // when
         Mockito.when(albumService.createAlbum(any())).thenThrow(new DuplicateEntryException(ExceptionConstants.MESSAGE_EXISTING_ALBUM));
 

@@ -3,6 +3,7 @@ package com.jordi.spotify.controllers.impl;
 import com.jordi.spotify.controllers.SongController;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.SongRest;
+import com.jordi.spotify.json.song.CreateSongRest;
 import com.jordi.spotify.responses.SpotifyResponse;
 import com.jordi.spotify.services.SongService;
 import com.jordi.spotify.utils.constants.CommonConstants;
@@ -36,5 +37,13 @@ public class SongControllerImpl implements SongController {
     public SpotifyResponse<SongRest> getSongById(@PathVariable Long id) throws SpotifyException {
         return new SpotifyResponse<>(CommonConstants.OK, String.valueOf(HttpStatus.OK.value()), CommonConstants.SUCCESS,
                 songService.getSongById(id));
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping
+    public SpotifyResponse<SongRest> createSong(@RequestBody CreateSongRest createSongRest) throws SpotifyException {
+        return new SpotifyResponse<>(CommonConstants.CREATED, String.valueOf(HttpStatus.CREATED.value()), CommonConstants.SUCCESS,
+                songService.createSong(createSongRest));
     }
 }

@@ -3,9 +3,11 @@ package com.jordi.spotify.services.impl;
 import com.jordi.spotify.entities.Album;
 import com.jordi.spotify.entities.Artist;
 import com.jordi.spotify.entities.Song;
+import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.SongRest;
+import com.jordi.spotify.json.song.CreateSongRest;
 import com.jordi.spotify.repositories.SongRepository;
 import org.junit.Before;
 import org.junit.Rule;
@@ -100,7 +102,29 @@ public class SongServiceImplTest {
 
         // then
         songService.getSongById(1L);
-// ignore
     }
+
+    @Test
+    public void createSongWorksFine() throws SpotifyException {
+        // given
+        CreateSongRest createSongRest = new CreateSongRest("Mr Blue Sky");
+
+        Song song = new Song(1L, "Mr Blue Sky");
+
+        SongRest songRest = new SongRest();
+        songRest.setId(1L);
+        songRest.setName("Mr Blue Sky");
+
+        // when
+        Mockito.when(songRepository.save(any())).thenReturn(song);
+
+        // then
+        SongRest result = songService.createSong(createSongRest);
+        assertNotNull(result);
+        assertEquals(songRest.getId(), result.getId());
+        assertEquals(songRest.getName(), result.getName());
+    }
+
+
 
 }

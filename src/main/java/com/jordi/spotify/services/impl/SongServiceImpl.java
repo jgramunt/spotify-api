@@ -1,16 +1,21 @@
 package com.jordi.spotify.services.impl;
 
+import com.jordi.spotify.entities.Album;
+import com.jordi.spotify.entities.Artist;
 import com.jordi.spotify.entities.Song;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
+import com.jordi.spotify.json.AlbumRest;
 import com.jordi.spotify.json.SongRest;
+import com.jordi.spotify.json.song.CreateSongRest;
+import com.jordi.spotify.repositories.AlbumRepository;
+import com.jordi.spotify.repositories.ArtistRepository;
 import com.jordi.spotify.repositories.SongRepository;
 import com.jordi.spotify.services.SongService;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +24,12 @@ public class SongServiceImpl implements SongService {
 
     @Autowired
     private SongRepository songRepository;
+
+    @Autowired
+    private ArtistRepository artistRepository;
+
+    @Autowired
+    private AlbumRepository albumRepository;
 
     @Override
     public List<SongRest> getSongs() throws SpotifyException {
@@ -30,14 +41,23 @@ public class SongServiceImpl implements SongService {
         return toRest(getSongOrThrow(id));
     }
 
+    @Override
+    public SongRest createSong(CreateSongRest createSongRest) throws SpotifyException {
+        return toRest(songRepository.save(createToRest(createSongRest)));
+    }
+
 
     // PRIVATE
     private SongRest toRest(Song song) {
         SongRest songRest = new SongRest();
         songRest.setId(song.getId());
         songRest.setName(song.getName());
-        if (song.getAlbum() != null) { songRest.setAlbumName(song.getAlbum().getName()); }
-        if (song.getArtist() != null) { songRest.setArtistName(song.getArtist().getName()); }
+        if (song.getAlbum() != null) {
+            songRest.setAlbumName(song.getAlbum().getName());
+        }
+        if (song.getArtist() != null) {
+            songRest.setArtistName(song.getArtist().getName());
+        }
         return songRest;
     }
 
@@ -45,4 +65,27 @@ public class SongServiceImpl implements SongService {
         return songRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_SONG));
     }
+
+    private Song createToRest(CreateSongRest createSongRest) throws NotFoundException {
+        Song song = new Song();
+        song.setName(createSongRest.getName());
+        if (createSongRest.getAlbumId() != null) {
+            song.setAlbum(getAlbumOrThrow(createSongRest.getAlbumId()));
+        }
+        if (createSongRest.getArtistId() != null) {
+            song.setArtist(getArtistOrThrow(createSongRest.getArtistId()));
+        }
+        return song;
+    }
+
+    private Album getAlbumOrThrow(Long id) throws NotFoundException {
+        return albumRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ALBUM));
+    }
+
+    private Artist getArtistOrThrow(Long id) throws NotFoundException {
+        return artistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ARTIST));
+    }
+
 }
