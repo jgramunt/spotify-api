@@ -13,6 +13,8 @@ public class ExceptionConstants {
     public static final String MESSAGE_EXISTING_ARTIST = "ARTIST ALREADY EXIST - An artist with the same name does already exist";
     public static final String MESSAGE_NONEXISTENT_ALBUM = "NONEXISTENT ALBUM - Album does not exist";
     public static final String MESSAGE_EXISTING_ALBUM = "ALBUM ALREADY EXIST - An album with the same name does already exist";
+    public static final String MESSAGE_NONEXISTENT_SONG = "NONEXISTENT SONG - Song does not exist";
+    public static final String MESSAGE_EXISTING_SONG = "SONG ALREADY EXIST - A song with the same name, artist and album does already exist";
 
 
 
