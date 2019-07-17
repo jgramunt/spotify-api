@@ -8,7 +8,10 @@ import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.SongRest;
 import com.jordi.spotify.json.song.CreateSongRest;
+import com.jordi.spotify.repositories.AlbumRepository;
+import com.jordi.spotify.repositories.ArtistRepository;
 import com.jordi.spotify.repositories.SongRepository;
+import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +34,13 @@ public class SongServiceImplTest {
 
     @Mock
     SongRepository songRepository;
+
+    @Mock
+    private ArtistRepository artistRepository;
+
+    @Mock
+    private AlbumRepository albumRepository;
+
 
     @InjectMocks
     SongServiceImpl songService;
@@ -109,13 +119,22 @@ public class SongServiceImplTest {
         // given
         CreateSongRest createSongRest = new CreateSongRest("Mr Blue Sky");
 
+        Album album = new Album(1L, "Out Of The Blue");
+        Artist artist = new Artist(1L, "Electric Light Orchestra");
+
         Song song = new Song(1L, "Mr Blue Sky");
+        song.setArtist(artist);
+        song.setAlbum(album);
 
         SongRest songRest = new SongRest();
         songRest.setId(1L);
         songRest.setName("Mr Blue Sky");
+        songRest.setAlbumName("Out Of The Blue");
+        songRest.setArtistName("Electric Light Orchestra");
 
         // when
+        Mockito.when(albumRepository.findById(1L)).thenReturn(Optional.of(album));
+        Mockito.when(artistRepository.findById(1L)).thenReturn(Optional.of(artist));
         Mockito.when(songRepository.save(any())).thenReturn(song);
 
         // then
@@ -123,8 +142,39 @@ public class SongServiceImplTest {
         assertNotNull(result);
         assertEquals(songRest.getId(), result.getId());
         assertEquals(songRest.getName(), result.getName());
+        assertEquals(songRest.getAlbumName(), result.getAlbumName());
+        assertEquals(songRest.getArtistName(), result.getArtistName());
     }
 
+    @Test
+    public void createSongAlbumNotFound() throws SpotifyException {
+        // given
+        expectedException.expect(NotFoundException.class);
+        expectedException.expectMessage("NONEXISTENT ALBUM - Album does not exist");
+        CreateSongRest createSongRest = new CreateSongRest("Mr Blue Sky");
+        createSongRest.setAlbumId(1L);
+
+        // when
+        Mockito.when(albumRepository.findById(any())).thenReturn(Optional.empty());
+
+        // then
+        songService.createSong(createSongRest);
+    }
+
+    @Test
+    public void createSongArtistNotFound() throws SpotifyException {
+        // given
+        expectedException.expect(NotFoundException.class);
+        expectedException.expectMessage("NONEXISTENT ARTIST - Artist does not exist");
+        CreateSongRest createSongRest = new CreateSongRest("Mr Blue Sky");
+        createSongRest.setArtistId(1L);
+
+        // when
+        Mockito.when(artistRepository.findById(any())).thenReturn(Optional.empty());
+
+        // then
+        songService.createSong(createSongRest);
+    }
 
 
 }

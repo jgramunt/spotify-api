@@ -61,10 +61,6 @@ public class SongServiceImpl implements SongService {
         return songRest;
     }
 
-    private Song getSongOrThrow(Long id) throws NotFoundException {
-        return songRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_SONG));
-    }
 
     private Song createToRest(CreateSongRest createSongRest) throws NotFoundException {
         Song song = new Song();
@@ -76,6 +72,11 @@ public class SongServiceImpl implements SongService {
             song.setArtist(getArtistOrThrow(createSongRest.getArtistId()));
         }
         return song;
+    }
+
+    private Song getSongOrThrow(Long id) throws NotFoundException {
+        return songRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_SONG));
     }
 
     private Album getAlbumOrThrow(Long id) throws NotFoundException {
