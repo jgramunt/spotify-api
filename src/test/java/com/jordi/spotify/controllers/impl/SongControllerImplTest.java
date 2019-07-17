@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.print.attribute.standard.Media;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -168,6 +169,31 @@ public class SongControllerImplTest {
                 .andExpect(jsonPath("$.message").value("NONEXISTENT SONG - Song does not exist"));
     }
 
+    @Test
+    public void deleteSongWorksFine() throws Exception {
+        // when
+        Mockito.when(songService.deleteSong(any())).thenReturn("Song deleted");
+
+        // then
+        mockMvc.perform(delete(appversion + "songs/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.status").value("NO CONTENT"))
+                .andExpect(jsonPath("$.code").value("204"))
+                .andExpect(jsonPath("$.message").value("Song deleted"));
+    }
+
+    @Test
+    public void deleteSongNotFound() throws Exception {
+        // when
+        Mockito.when(songService.deleteSong(any())).thenThrow(new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_SONG));
+
+        // then
+        mockMvc.perform(delete(appversion + "songs/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status").value("ERROR"))
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value("NONEXISTENT SONG - Song does not exist"));
+    }
 
     // PRIVATE
     private String asJsonString(Object object) {

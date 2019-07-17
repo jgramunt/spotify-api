@@ -54,4 +54,13 @@ public class SongControllerImpl implements SongController {
         return new SpotifyResponse<>(CommonConstants.OK, String.valueOf(HttpStatus.OK.value()), CommonConstants.SUCCESS,
                 songService.updateSong(id, createSongRest));
     }
+
+    @Override
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(value = RestConstants.RESOURCE_ID)
+    public SpotifyResponse<String> deleteSong(@PathVariable Long id) throws SpotifyException {
+        return new SpotifyResponse<>(CommonConstants.NO_CONTENT, String.valueOf(HttpStatus.NO_CONTENT.value()),
+                songService.deleteSong(id));
+    }
+
 }

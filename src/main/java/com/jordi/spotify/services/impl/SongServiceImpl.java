@@ -52,13 +52,11 @@ public class SongServiceImpl implements SongService {
         return toRest(updatedSong);
     }
 
-    private Song updateSongEntity(Song actualSong, CreateSongRest updatedSong) throws NotFoundException {
-        if (updatedSong.getName() != null) { actualSong.setName(updatedSong.getName()); }
-        if (updatedSong.getArtistId() != null) { actualSong.setArtist(getArtistOrThrow(updatedSong.getArtistId()));}
-        if (updatedSong.getAlbumId() != null) { actualSong.setAlbum(getAlbumOrThrow(updatedSong.getAlbumId()));}
-        return actualSong;
+    @Override
+    public String deleteSong(Long id) throws SpotifyException {
+        songRepository.delete(getSongOrThrow(id));
+        return "Song deleted";
     }
-
 
     // PRIVATE
     private SongRest toRest(Song song) {
@@ -102,4 +100,10 @@ public class SongServiceImpl implements SongService {
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ARTIST));
     }
 
+    private Song updateSongEntity(Song actualSong, CreateSongRest updatedSong) throws NotFoundException {
+        if (updatedSong.getName() != null) { actualSong.setName(updatedSong.getName()); }
+        if (updatedSong.getArtistId() != null) { actualSong.setArtist(getArtistOrThrow(updatedSong.getArtistId()));}
+        if (updatedSong.getAlbumId() != null) { actualSong.setAlbum(getAlbumOrThrow(updatedSong.getAlbumId()));}
+        return actualSong;
+    }
 }

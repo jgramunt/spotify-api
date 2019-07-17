@@ -209,4 +209,15 @@ public class SongServiceImplTest {
         assertEquals(songRest.getArtistName(), result.getArtistName());
     }
 
+    @Test
+    public void deleteSongWorksFine() throws SpotifyException {
+        // when
+        Mockito.when(songRepository.findById(1L)).thenReturn(Optional.of(new Song()));
+
+        // then
+        String result = songService.deleteSong(1L);
+        assertNotNull(result);
+        assertEquals("Song deleted", result);
+    }
+
 }

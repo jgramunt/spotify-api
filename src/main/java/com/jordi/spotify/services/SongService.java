@@ -16,4 +16,6 @@ public interface SongService {
 
     SongRest updateSong(Long id, CreateSongRest createSongRest) throws SpotifyException;
 
+    String deleteSong(Long id) throws SpotifyException;
+
 }
