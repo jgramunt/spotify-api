@@ -43,7 +43,20 @@ public class SongServiceImpl implements SongService {
 
     @Override
     public SongRest createSong(CreateSongRest createSongRest) throws SpotifyException {
-        return toRest(songRepository.save(createToRest(createSongRest)));
+        return toRest(songRepository.save(createToEntity(createSongRest)));
+    }
+
+    @Override
+    public SongRest updateSong(Long id, CreateSongRest createSongRest) throws SpotifyException {
+        Song updatedSong = updateSongEntity(getSongOrThrow(id), createSongRest);
+        return toRest(updatedSong);
+    }
+
+    private Song updateSongEntity(Song actualSong, CreateSongRest updatedSong) throws NotFoundException {
+        if (updatedSong.getName() != null) { actualSong.setName(updatedSong.getName()); }
+        if (updatedSong.getArtistId() != null) { actualSong.setArtist(getArtistOrThrow(updatedSong.getArtistId()));}
+        if (updatedSong.getAlbumId() != null) { actualSong.setAlbum(getAlbumOrThrow(updatedSong.getAlbumId()));}
+        return actualSong;
     }
 
 
@@ -62,7 +75,7 @@ public class SongServiceImpl implements SongService {
     }
 
 
-    private Song createToRest(CreateSongRest createSongRest) throws NotFoundException {
+    private Song createToEntity(CreateSongRest createSongRest) throws NotFoundException {
         Song song = new Song();
         song.setName(createSongRest.getName());
         if (createSongRest.getAlbumId() != null) {

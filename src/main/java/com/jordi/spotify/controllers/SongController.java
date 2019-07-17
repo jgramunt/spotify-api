@@ -15,4 +15,6 @@ public interface SongController {
 
     SpotifyResponse<SongRest> createSong(CreateSongRest createSongRest) throws SpotifyException;
 
+    SpotifyResponse<SongRest> updateSong(Long id, CreateSongRest createSongRest) throws SpotifyException;
+
 }

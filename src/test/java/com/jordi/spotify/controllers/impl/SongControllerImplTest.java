@@ -2,6 +2,7 @@ package com.jordi.spotify.controllers.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.jordi.spotify.entities.Song;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
@@ -12,6 +13,7 @@ import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,8 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -131,6 +132,40 @@ public class SongControllerImplTest {
                 .andExpect(jsonPath("$.status").value("ERROR"))
                 .andExpect(jsonPath("$.code").value("409"))
                 .andExpect(jsonPath("$.message").value("SONG ALREADY EXIST - A song with the same name, artist and album does already exist"));
+    }
+
+    @Test
+    public void updateSongWorksFine() throws Exception {
+        // given
+        CreateSongRest createSongRest = new CreateSongRest("Mr Blue Sky");
+        SongRest songRest = new SongRest(1L, "Mr Blue Sky");
+
+        // when
+        Mockito.when(songService.updateSong(any(), any())).thenReturn(songRest);
+
+        // then
+        mockMvc.perform(patch(appversion + "songs/1").contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(createSongRest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("OK"))
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("Success"))
+                .andExpect(jsonPath("$.data.id").value("1"))
+                .andExpect(jsonPath("$.data.name").value("Mr Blue Sky"));
+    }
+
+    @Test
+    public void updateSongNotFound() throws Exception {
+        // when
+        Mockito.when(songService.updateSong(any(), any())).thenThrow(new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_SONG));
+
+        // then
+        mockMvc.perform(patch(appversion + "songs/1").contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(new CreateSongRest())))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status").value("ERROR"))
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value("NONEXISTENT SONG - Song does not exist"));
     }
 
 

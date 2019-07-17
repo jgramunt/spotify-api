@@ -176,5 +176,37 @@ public class SongServiceImplTest {
         songService.createSong(createSongRest);
     }
 
+    @Test
+    public void updateSong() throws SpotifyException {
+        // given
+        CreateSongRest createSongRest = new CreateSongRest();
+        createSongRest.setName("Mr Blue Sky");
+        createSongRest.setAlbumId(2L);
+        createSongRest.setArtistId(2L);
+
+        Album album = new Album(2L, "Out Of The Blue");
+        Artist artist = new Artist(2L, "Electric Light Orchestra");
+
+        Song songToUpdate = new Song(1L, "Hotel California");
+
+        SongRest songRest = new SongRest();
+        songRest.setId(1L);
+        songRest.setName("Mr Blue Sky");
+        songRest.setArtistName("Electric Light Orchestra");
+        songRest.setAlbumName("Out Of The Blue");
+
+        //when
+        Mockito.when(songRepository.findById(1L)).thenReturn(Optional.of(songToUpdate));
+        Mockito.when(albumRepository.findById(2L)).thenReturn(Optional.of(album));
+        Mockito.when(artistRepository.findById(2L)).thenReturn(Optional.of(artist));
+
+        // then
+        SongRest result = songService.updateSong(1L, createSongRest);
+        assertNotNull(result);
+        assertEquals(songRest.getId(), result.getId());
+        assertEquals(songRest.getName(), result.getName());
+        assertEquals(songRest.getAlbumName(), result.getAlbumName());
+        assertEquals(songRest.getArtistName(), result.getArtistName());
+    }
 
 }

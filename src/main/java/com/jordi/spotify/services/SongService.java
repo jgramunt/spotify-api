@@ -14,4 +14,6 @@ public interface SongService {
 
     SongRest createSong(CreateSongRest createSongRest) throws SpotifyException;
 
+    SongRest updateSong(Long id, CreateSongRest createSongRest) throws SpotifyException;
+
 }
