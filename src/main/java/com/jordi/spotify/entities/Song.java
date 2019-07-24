@@ -24,6 +24,9 @@ public class Song implements Serializable {
     @JoinColumn(name = "ALBUM_ID")
     private Album album;
 
+    @Column(name = "TRACK_NUMBER")
+    private Integer trackNumber;
+
     public Song() {}
 
     public Song(Long id, String name) {
@@ -62,4 +65,8 @@ public class Song implements Serializable {
     public void setAlbum(Album album) {
         this.album = album;
     }
+
+    public Integer getTrackNumber() { return trackNumber; }
+
+    public void setTrackNumber(Integer trackNumber) { this.trackNumber = trackNumber; }
 }

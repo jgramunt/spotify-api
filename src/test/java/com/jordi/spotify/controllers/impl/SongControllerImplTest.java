@@ -19,8 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.HandlerResultMatchers;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.web.HttpRequestHandler;
 
 import javax.print.attribute.standard.Media;
 import java.util.ArrayList;
@@ -74,6 +78,7 @@ public class SongControllerImplTest {
     public void getSongByIdWorksFine() throws Exception {
         // given
         SongRest songRest = new SongRest(1L, "Mr Blue Sky");
+        songRest.setTrackNumber(2);
 
         // when
         Mockito.when(songService.getSongById(1L)).thenReturn(songRest);
@@ -85,8 +90,8 @@ public class SongControllerImplTest {
                 .andExpect(jsonPath("$.code").value("200"))
                 .andExpect(jsonPath("$.message").value("Success"))
                 .andExpect(jsonPath("$.data.id").value("1"))
-                .andExpect(jsonPath("$.data.name").value("Mr Blue Sky"));
-
+                .andExpect(jsonPath("$.data.name").value("Mr Blue Sky"))
+                .andExpect(jsonPath("$.data.trackNumber").value("2"));
     }
 
     @Test

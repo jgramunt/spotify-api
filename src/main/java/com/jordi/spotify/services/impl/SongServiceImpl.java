@@ -59,16 +59,26 @@ public class SongServiceImpl implements SongService {
     }
 
     // PRIVATE
+
+    private Song getSongOrThrow(Long id) throws NotFoundException {
+        return songRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_SONG));
+    }
+
     private SongRest toRest(Song song) {
         SongRest songRest = new SongRest();
         songRest.setId(song.getId());
         songRest.setName(song.getName());
         if (song.getAlbum() != null) {
-            songRest.setAlbumName(song.getAlbum().getName());
+            songRest.setAlbumName(
+                    song.getAlbum().getName());
         }
         if (song.getArtist() != null) {
-            songRest.setArtistName(song.getArtist().getName());
+            songRest.setArtistName(
+                    song.getArtist().getName());
         }
+        songRest.setTrackNumber(song.getTrackNumber());
+
         return songRest;
     }
 
@@ -83,11 +93,6 @@ public class SongServiceImpl implements SongService {
             song.setArtist(getArtistOrThrow(createSongRest.getArtistId()));
         }
         return song;
-    }
-
-    private Song getSongOrThrow(Long id) throws NotFoundException {
-        return songRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_SONG));
     }
 
     private Album getAlbumOrThrow(Long id) throws NotFoundException {
