@@ -15,6 +15,7 @@ public class ExceptionConstants {
     public static final String MESSAGE_EXISTING_ALBUM = "ALBUM ALREADY EXIST - An album with the same name does already exist";
     public static final String MESSAGE_NONEXISTENT_SONG = "NONEXISTENT SONG - Song does not exist";
     public static final String MESSAGE_EXISTING_SONG = "SONG ALREADY EXIST - A song with the same name, artist and album does already exist";
+    public static final String MESSAGE_EXISTING_TRACK_NUMBER = "TRACK NUMBER ALREADY EXIST - A song with the same track number for this album does already exist";
 
 
 

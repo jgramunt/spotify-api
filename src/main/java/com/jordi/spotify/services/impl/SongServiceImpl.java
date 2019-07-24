@@ -3,6 +3,7 @@ package com.jordi.spotify.services.impl;
 import com.jordi.spotify.entities.Album;
 import com.jordi.spotify.entities.Artist;
 import com.jordi.spotify.entities.Song;
+import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.AlbumRest;
@@ -16,6 +17,7 @@ import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,6 +94,7 @@ public class SongServiceImpl implements SongService {
         if (createSongRest.getArtistId() != null) {
             song.setArtist(getArtistOrThrow(createSongRest.getArtistId()));
         }
+        song.setTrackNumber(createSongRest.getTrackNumber());
         return song;
     }
 
@@ -105,10 +108,22 @@ public class SongServiceImpl implements SongService {
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ARTIST));
     }
 
-    private Song updateSongEntity(Song actualSong, CreateSongRest updatedSong) throws NotFoundException {
+    private Song updateSongEntity(Song actualSong, CreateSongRest updatedSong) throws NotFoundException, DuplicateEntryException {
         if (updatedSong.getName() != null) { actualSong.setName(updatedSong.getName()); }
         if (updatedSong.getArtistId() != null) { actualSong.setArtist(getArtistOrThrow(updatedSong.getArtistId()));}
         if (updatedSong.getAlbumId() != null) { actualSong.setAlbum(getAlbumOrThrow(updatedSong.getAlbumId()));}
+        if (updatedSong.getTrackNumber() != null) {
+            throwExceptionIfTrackNumberIsAlreadyInAlbum(getAlbumOrThrow(updatedSong.getAlbumId()), updatedSong.getTrackNumber());
+            actualSong.setTrackNumber(updatedSong.getTrackNumber());
+        }
         return actualSong;
+    }
+
+    private void throwExceptionIfTrackNumberIsAlreadyInAlbum(Album album, Integer trackNumber) throws DuplicateEntryException {
+        for (Song song : album.getSongList()) {
+            if (song.getTrackNumber().equals(trackNumber)) {
+                throw new DuplicateEntryException(ExceptionConstants.MESSAGE_EXISTING_TRACK_NUMBER);
+            }
+        }
     }
 }
