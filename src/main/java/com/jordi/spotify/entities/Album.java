@@ -2,6 +2,7 @@ package com.jordi.spotify.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "ALBUMS")
@@ -15,6 +16,10 @@ public class Album implements Serializable {
 
     @Column(name="NAME")
     private String name;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "album")
+    private List<Song> songList;
+
 
     public Album() {}
 
@@ -39,4 +44,7 @@ public class Album implements Serializable {
         this.name = name;
     }
 
+    public List<Song> getSongList() { return songList; }
+
+    public void setSongList(List<Song> songList) { this.songList = songList; }
 }

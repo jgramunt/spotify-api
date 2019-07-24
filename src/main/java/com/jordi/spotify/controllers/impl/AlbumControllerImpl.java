@@ -4,6 +4,7 @@ import com.jordi.spotify.controllers.AlbumController;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.AlbumRest;
 import com.jordi.spotify.json.album.AlbumCreateRest;
+import com.jordi.spotify.json.album.AlbumRestWithSongs;
 import com.jordi.spotify.responses.SpotifyResponse;
 import com.jordi.spotify.services.AlbumService;
 import com.jordi.spotify.utils.constants.CommonConstants;
@@ -34,7 +35,7 @@ public class AlbumControllerImpl implements AlbumController {
     @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = RestConstants.RESOURCE_ID, produces = MediaType.APPLICATION_JSON_VALUE)
-    public SpotifyResponse<AlbumRest> getAlbumById(@PathVariable Long id) throws SpotifyException {
+    public SpotifyResponse<AlbumRestWithSongs> getAlbumById(@PathVariable Long id) throws SpotifyException {
         return new SpotifyResponse<>(CommonConstants.OK, String.valueOf(HttpStatus.OK.value()), CommonConstants.SUCCESS,
                 albumService.getAlbumById(id));
     }

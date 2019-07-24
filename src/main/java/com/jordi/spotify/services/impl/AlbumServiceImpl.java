@@ -2,11 +2,14 @@ package com.jordi.spotify.services.impl;
 
 
 import com.jordi.spotify.entities.Album;
+import com.jordi.spotify.entities.Song;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.AlbumRest;
 import com.jordi.spotify.json.album.AlbumCreateRest;
+import com.jordi.spotify.json.album.AlbumRestWithSongs;
+import com.jordi.spotify.json.album.AlbumSongRest;
 import com.jordi.spotify.repositories.AlbumRepository;
 import com.jordi.spotify.services.AlbumService;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
@@ -30,8 +33,8 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public AlbumRest getAlbumById(Long id) throws SpotifyException {
-        return toRest(getAlbumOrThrow(id));
+    public AlbumRestWithSongs getAlbumById(Long id) throws SpotifyException {
+        return toAlbumRestWithSongs(getAlbumOrThrow(id));
     }
 
     @Override
@@ -66,6 +69,28 @@ public class AlbumServiceImpl implements AlbumService {
         albumRest.setName(album.getName());
         return albumRest;
     }
+
+    private AlbumRestWithSongs toAlbumRestWithSongs(Album album) {
+        AlbumRestWithSongs albumRestWithSongs = new AlbumRestWithSongs();
+        albumRestWithSongs.setId(album.getId());
+        albumRestWithSongs.setName(album.getName());
+        albumRestWithSongs.setSongs(toAlbumSongRestList(album.getSongList()));
+        return albumRestWithSongs;
+    }
+
+    private AlbumSongRest toAlbumSongRest(Song song) {
+        AlbumSongRest songRest = new AlbumSongRest();
+        songRest.setId(song.getId());
+        songRest.setName(song.getName());
+        songRest.setArtistName(song.getArtist().getName());
+        songRest.setTrackNumber(song.getTrackNumber());
+        return songRest;
+    }
+
+    private List<AlbumSongRest> toAlbumSongRestList(List<Song> songList) {
+        return songList.stream().map(song -> toAlbumSongRest(song)).collect(Collectors.toList());
+    }
+
 
     private Album getAlbumOrThrow(Long id) throws NotFoundException {
         return albumRepository.findById(id)
