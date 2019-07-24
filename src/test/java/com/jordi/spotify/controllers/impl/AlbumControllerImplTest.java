@@ -7,6 +7,8 @@ import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.json.AlbumRest;
 import com.jordi.spotify.json.album.AlbumCreateRest;
+import com.jordi.spotify.json.album.AlbumRestWithSongs;
+import com.jordi.spotify.json.album.AlbumSongRest;
 import com.jordi.spotify.services.AlbumService;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Test;
@@ -73,10 +75,25 @@ public class AlbumControllerImplTest {
     @Test
     public void getByIdWorksFine() throws Exception {
         // given
-        AlbumRest albumRest = new AlbumRest(2L, "Let It Be");
+        AlbumSongRest albumSongRest1 = new AlbumSongRest();
+        albumSongRest1.setId(1L);
+        albumSongRest1.setArtistName("The Beatles");
+        albumSongRest1.setName("Two Of Us");
+        albumSongRest1.setTrackNumber(1);
+        AlbumSongRest albumSongRest2 = new AlbumSongRest();
+        albumSongRest2.setId(2L);
+        albumSongRest2.setArtistName("The Beatles");
+        albumSongRest2.setName("Dig A Pony");
+        albumSongRest2.setTrackNumber(2);
+        List<AlbumSongRest> albumSongRestList = new ArrayList<>();
+
+        AlbumRestWithSongs albumRestWithSongs = new AlbumRestWithSongs(2L, "Let It Be");
+        albumSongRestList.add(albumSongRest1);
+        albumSongRestList.add(albumSongRest2);
+        albumRestWithSongs.setSongs(albumSongRestList);
 
         // when
-        Mockito.when(albumService.getAlbumById(2L)).thenReturn(albumRest);
+        Mockito.when(albumService.getAlbumById(2L)).thenReturn(albumRestWithSongs);
 
         // then
         mockMvc.perform(get(appversion + "albums/2").contentType(MediaType.APPLICATION_JSON))
@@ -85,7 +102,15 @@ public class AlbumControllerImplTest {
                 .andExpect(jsonPath("$.code").value("200"))
                 .andExpect(jsonPath("$.message").value("Success"))
                 .andExpect(jsonPath("$.data.id").value("2"))
-                .andExpect(jsonPath("$.data.name").value("Let It Be"));
+                .andExpect(jsonPath("$.data.name").value("Let It Be"))
+                .andExpect(jsonPath("$.data.songs[0].name").value("Two Of Us"))
+                .andExpect(jsonPath("$.data.songs[0].artistName").value("The Beatles"))
+                .andExpect(jsonPath("$.data.songs[0].trackNumber").value("1"))
+                .andExpect(jsonPath("$.data.songs[0].id").value("1"))
+                .andExpect(jsonPath("$.data.songs[1].name").value("Dig A Pony"))
+                .andExpect(jsonPath("$.data.songs[1].artistName").value("The Beatles"))
+                .andExpect(jsonPath("$.data.songs[1].trackNumber").value("2"))
+                .andExpect(jsonPath("$.data.songs[1].id").value("2"));
     }
 
     @Test

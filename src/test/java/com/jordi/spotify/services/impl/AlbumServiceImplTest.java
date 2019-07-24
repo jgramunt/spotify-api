@@ -1,13 +1,18 @@
 package com.jordi.spotify.services.impl;
 
 import com.jordi.spotify.entities.Album;
+import com.jordi.spotify.entities.Artist;
+import com.jordi.spotify.entities.Song;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.AlbumRest;
 import com.jordi.spotify.json.ArtistRest;
 import com.jordi.spotify.json.album.AlbumCreateRest;
+import com.jordi.spotify.json.album.AlbumRestWithSongs;
+import com.jordi.spotify.json.album.AlbumSongRest;
 import com.jordi.spotify.repositories.AlbumRepository;
+import com.jordi.spotify.services.AlbumService;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Before;
 import org.junit.Rule;
@@ -81,17 +86,53 @@ public class AlbumServiceImplTest {
     @Test
     public void getByIdWorksFine() throws SpotifyException {
         // given
+        Artist artist = new Artist(1L, "The Beatles");
+        Song song1 = new Song();
+        song1.setId(1L);
+        song1.setArtist(artist);
+        song1.setName("Two Of Us");
+        song1.setTrackNumber(1);
+        Song song2 = new Song();
+        song2.setId(2L);
+        song2.setArtist(artist);
+        song2.setName("Dig A Pony");
+        song2.setTrackNumber(2);
+        List<Song> songList = new ArrayList<>();
+        songList.add(song1);
+        songList.add(song2);
+
         Album album = new Album(2L, "Let It Be");
-        AlbumRest albumRest = new AlbumRest(2L, "Let It Be");
+        album.setSongList(songList);
+
+        AlbumSongRest albumSongRest1 = new AlbumSongRest();
+        albumSongRest1.setId(1L);
+        albumSongRest1.setArtistName("The Beatles");
+        albumSongRest1.setName("Two Of Us");
+        albumSongRest1.setTrackNumber(1);
+        AlbumSongRest albumSongRest2 = new AlbumSongRest();
+        albumSongRest2.setId(2L);
+        albumSongRest2.setArtistName("The Beatles");
+        albumSongRest2.setName("Dig A Pony");
+        albumSongRest2.setTrackNumber(2);
+        List<AlbumSongRest> albumSongRestList = new ArrayList<>();
+        albumSongRestList.add(albumSongRest1);
+        albumSongRestList.add(albumSongRest2);
+
+        AlbumRestWithSongs albumRest = new AlbumRestWithSongs(2L, "Let It Be");
+        albumRest.setSongs(albumSongRestList);
 
         // when
-        Mockito.when(albumRepository.findById(2L)).thenReturn(java.util.Optional.ofNullable(album));
+        Mockito.when(albumRepository.findById(2L)).thenReturn(Optional.of(album));
 
         // then
-        AlbumRest result = albumService.getAlbumById(2L);
+        AlbumRestWithSongs result = albumService.getAlbumById(2L);
+        List<AlbumSongRest> resultSongs = result.getSongs();
         assertNotNull(result);
         assertEquals(albumRest.getId(), result.getId());
         assertEquals(albumRest.getName(), result.getName());
+        assertEquals(song1.getId(), resultSongs.get(0).getId());
+        assertEquals(song1.getName(), resultSongs.get(0).getName());
+        assertEquals(song1.getArtist().getName(), resultSongs.get(0).getArtistName());
     }
 
     @Test
