@@ -86,9 +86,11 @@ public class SongServiceImplTest {
         Song song = new Song(1L, "Mr Blue Sky");
         song.setAlbum(album);
         song.setArtist(artist);
+        song.setTrackNumber(1);
         SongRest songRest = new SongRest(1L, "Mr Blue Sky");
         songRest.setAlbumName(album.getName());
         songRest.setArtistName(artist.getName());
+        songRest.setTrackNumber(1);
 
         // when
         Mockito.when(songRepository.findById(1L)).thenReturn(java.util.Optional.of(song));
@@ -100,6 +102,7 @@ public class SongServiceImplTest {
         assertEquals(songRest.getName(), result.getName());
         assertEquals(songRest.getAlbumName(), result.getAlbumName());
         assertEquals(songRest.getArtistName(), result.getArtistName());
+        assertEquals(songRest.getTrackNumber(), result.getTrackNumber());
     }
 
     @Test

@@ -10,6 +10,7 @@ public class SongRest implements Serializable {
     private String name;
     private String artistName;
     private String albumName;
+    private Integer trackNumber;
 
     public SongRest() {}
 
@@ -49,4 +50,9 @@ public class SongRest implements Serializable {
     public void setAlbumName(String albumName) {
         this.albumName = albumName;
     }
+
+    public Integer getTrackNumber() { return trackNumber; }
+
+    public void setTrackNumber(Integer trackNumber) { this.trackNumber = trackNumber; }
+
 }
