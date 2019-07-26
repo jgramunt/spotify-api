@@ -46,19 +46,19 @@ public class SongUpdater {
     }
 
     private void updateArtist() throws NotFoundException {
-        if (updatedSong.getName() != null) {
+        if (updatedSong.getArtistId() != null) {
             actualSong.setArtist(getArtistOrThrow(updatedSong.getArtistId()));
         }
     }
 
     private void updateAlbum() throws NotFoundException {
-        if (updatedSong.getArtistId() != null) {
+        if (updatedSong.getAlbumId() != null) {
             actualSong.setAlbum(getAlbumOrThrow(updatedSong.getAlbumId()));
         }
     }
 
     private void updateTrackNumber() throws DuplicateEntryException {
-        if (updatedSong.getName() != null) {
+        if (updatedSong.getTrackNumber() != null) {
             actualSong.setTrackNumber(updatedSong.getTrackNumber());
         }
         if (actualSong.getAlbum() != null) {
