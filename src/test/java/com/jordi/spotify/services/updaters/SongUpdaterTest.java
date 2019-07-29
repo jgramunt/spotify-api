@@ -3,11 +3,14 @@ package com.jordi.spotify.services.updaters;
 import com.jordi.spotify.entities.Album;
 import com.jordi.spotify.entities.Artist;
 import com.jordi.spotify.entities.Song;
+import com.jordi.spotify.exceptions.DuplicateEntryException;
+import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.song.UserInputSongRest;
 import com.jordi.spotify.repositories.AlbumRepository;
 import com.jordi.spotify.repositories.ArtistRepository;
 import com.jordi.spotify.repositories.SongRepository;
+import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,8 +20,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.Constants;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -80,5 +85,65 @@ public class SongUpdaterTest {
         assertEquals(song.getAlbum(), result.getAlbum());
         assertEquals(song.getArtist(), result.getArtist());
         assertEquals(song.getTrackNumber(), result.getTrackNumber());
+    }
+
+    @Test
+    public void shouldThrowArtistNotFoundExceptionWhenArtistNotFound() throws SpotifyException {
+        // given
+        expectedException.expect(NotFoundException.class);
+        expectedException.expectMessage("NONEXISTENT ARTIST - Artist does not exist");
+
+        Song songToUpdate = new Song(1L, "Fixing A Hole");
+        UserInputSongRest userInputSongRest = new UserInputSongRest();
+        userInputSongRest.setArtistId(2L);
+
+        // when
+        Mockito.when(artistRepository.findById(2L)).thenReturn(Optional.empty());
+
+        // then
+        songUpdater.updateSong(songToUpdate, userInputSongRest);
+    }
+
+    @Test
+    public void shouldThrowAlbumNotFoundExceptionWhenAlbumNotFound() throws SpotifyException {
+        // given
+        expectedException.expect(NotFoundException.class);
+        expectedException.expectMessage("NONEXISTENT ALBUM - Album does not exist");
+
+        Song songToUpdate = new Song(1L, "Fixing A Hole");
+        UserInputSongRest userInputSongRest = new UserInputSongRest();
+        userInputSongRest.setAlbumId(2L);
+
+        // when
+        Mockito.when(albumRepository.findById(2L)).thenReturn(Optional.empty());
+
+        // then
+        songUpdater.updateSong(songToUpdate, userInputSongRest);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenTrackNumberIsAlreadyInAlbum() throws SpotifyException {
+        // given
+        expectedException.expect(DuplicateEntryException.class);
+        expectedException.expectMessage("TRACK NUMBER ALREADY EXIST - A song with the same track number for this album does already exist");
+
+        Song songOnAlbum = new Song(1L, "Song 1");
+        songOnAlbum.setTrackNumber(1);
+        List<Song> albumSongList = new ArrayList<>();
+        albumSongList.add(songOnAlbum);
+        Album album = new Album(1L, "Some Album");
+        album.setSongList(albumSongList);
+
+        Song songToUpdate = new Song(2L, "Song To Update");
+        UserInputSongRest userInputSongRest = new UserInputSongRest();
+        userInputSongRest.setAlbumId(1L);
+        userInputSongRest.setTrackNumber(1);
+
+        // when
+        Mockito.when(albumRepository.findById(1L)).thenReturn(Optional.of(album));
+
+        // then
+        songUpdater.updateSong(songToUpdate, userInputSongRest);
+
     }
 }

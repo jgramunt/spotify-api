@@ -53,10 +53,20 @@ public class SongUpdater {
         }
     }
 
+    private Artist getArtistOrThrow(Long id) throws NotFoundException {
+        return artistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ARTIST));
+    }
+
     private void updateAlbum() throws NotFoundException {
         if (updatedSong.getAlbumId() != null) {
             actualSong.setAlbum(getAlbumOrThrow(updatedSong.getAlbumId()));
         }
+    }
+
+    private Album getAlbumOrThrow(Long id) throws NotFoundException {
+        return albumRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ALBUM));
     }
 
     private void updateTrackNumber() throws DuplicateEntryException {
@@ -76,14 +86,4 @@ public class SongUpdater {
         }
     }
 
-
-    private Album getAlbumOrThrow(Long id) throws NotFoundException {
-        return albumRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ALBUM));
-    }
-
-    private Artist getArtistOrThrow(Long id) throws NotFoundException {
-        return artistRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ARTIST));
-    }
 }
