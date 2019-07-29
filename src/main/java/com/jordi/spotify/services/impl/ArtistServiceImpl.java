@@ -4,15 +4,14 @@ import com.jordi.spotify.entities.Artist;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.ArtistRest;
-import com.jordi.spotify.json.artist.ArtistCreateRest;
+import com.jordi.spotify.json.artist.ArtistRest;
+import com.jordi.spotify.json.artist.UserInputArtistRest;
 import com.jordi.spotify.repositories.ArtistRepository;
 import com.jordi.spotify.services.ArtistService;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +34,7 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
-    public ArtistRest createArtist(ArtistCreateRest createdArtist) throws SpotifyException {
+    public ArtistRest createArtist(UserInputArtistRest createdArtist) throws SpotifyException {
         if (artistRepository.existsByName(createdArtist.getName())) {
             throw new DuplicateEntryException(ExceptionConstants.MESSAGE_EXISTING_ARTIST);
         }

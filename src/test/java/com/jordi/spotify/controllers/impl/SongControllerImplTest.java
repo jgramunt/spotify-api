@@ -2,31 +2,23 @@ package com.jordi.spotify.controllers.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.jordi.spotify.entities.Song;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
-import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.SongRest;
-import com.jordi.spotify.json.song.CreateSongRest;
+import com.jordi.spotify.json.song.SongRest;
+import com.jordi.spotify.json.song.UserInputSongRest;
 import com.jordi.spotify.services.SongService;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.HandlerResultMatchers;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.web.HttpRequestHandler;
 
-import javax.print.attribute.standard.Media;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,7 +101,7 @@ public class SongControllerImplTest {
     @Test
     public void createSongWorksFine() throws Exception {
         // given
-        CreateSongRest createSongRest = new CreateSongRest("Mr Blue Sky");
+        UserInputSongRest userInputSongRest = new UserInputSongRest("Mr Blue Sky");
         SongRest songRest = new SongRest(1L, "Mr Blue Sky");
 
         // when
@@ -117,7 +109,7 @@ public class SongControllerImplTest {
 
         // then
         mockMvc.perform(post(appversion + "songs").contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(createSongRest)))
+                .content(asJsonString(userInputSongRest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("CREATED"))
                 .andExpect(jsonPath("$.code").value("201"))
@@ -133,7 +125,7 @@ public class SongControllerImplTest {
 
         // then
         mockMvc.perform(post(appversion + "songs").contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(new CreateSongRest())))
+                .content(asJsonString(new UserInputSongRest())))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.status").value("ERROR"))
                 .andExpect(jsonPath("$.code").value("409"))
@@ -143,7 +135,7 @@ public class SongControllerImplTest {
     @Test
     public void updateSongWorksFine() throws Exception {
         // given
-        CreateSongRest createSongRest = new CreateSongRest("Mr Blue Sky");
+        UserInputSongRest userInputSongRest = new UserInputSongRest("Mr Blue Sky");
         SongRest songRest = new SongRest(1L, "Mr Blue Sky");
 
         // when
@@ -151,7 +143,7 @@ public class SongControllerImplTest {
 
         // then
         mockMvc.perform(patch(appversion + "songs/1").contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(createSongRest)))
+                .content(asJsonString(userInputSongRest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("OK"))
                 .andExpect(jsonPath("$.code").value("200"))
@@ -167,7 +159,7 @@ public class SongControllerImplTest {
 
         // then
         mockMvc.perform(patch(appversion + "songs/1").contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(new CreateSongRest())))
+                .content(asJsonString(new UserInputSongRest())))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.status").value("ERROR"))
                 .andExpect(jsonPath("$.code").value("404"))

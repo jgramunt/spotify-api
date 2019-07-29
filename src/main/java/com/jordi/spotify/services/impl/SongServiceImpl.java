@@ -3,16 +3,17 @@ package com.jordi.spotify.services.impl;
 import com.jordi.spotify.entities.Album;
 import com.jordi.spotify.entities.Artist;
 import com.jordi.spotify.entities.Song;
+import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.AlbumRest;
-import com.jordi.spotify.json.SongRest;
-import com.jordi.spotify.json.song.CreateSongRest;
+import com.jordi.spotify.json.song.SongRest;
+import com.jordi.spotify.json.song.UserInputSongRest;
 import com.jordi.spotify.repositories.AlbumRepository;
 import com.jordi.spotify.repositories.ArtistRepository;
 import com.jordi.spotify.repositories.SongRepository;
 import com.jordi.spotify.services.SongService;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
+import com.jordi.spotify.services.updaters.SongUpdater;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,9 @@ public class SongServiceImpl implements SongService {
     @Autowired
     private AlbumRepository albumRepository;
 
+    @Autowired
+    private SongUpdater songUpdater;
+
     @Override
     public List<SongRest> getSongs() throws SpotifyException {
         return songRepository.findAll().stream().map(song -> toRest(song)).collect(Collectors.toList());
@@ -42,14 +46,15 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public SongRest createSong(CreateSongRest createSongRest) throws SpotifyException {
-        return toRest(songRepository.save(createToEntity(createSongRest)));
+    public SongRest createSong(UserInputSongRest userInputSongRest) throws SpotifyException {
+        Song newSong = createSongEntity(userInputSongRest);
+        return toRest(songRepository.save(newSong));
     }
 
     @Override
-    public SongRest updateSong(Long id, CreateSongRest createSongRest) throws SpotifyException {
-        Song updatedSong = updateSongEntity(getSongOrThrow(id), createSongRest);
-        return toRest(updatedSong);
+    public SongRest updateSong(Long id, UserInputSongRest userInputSongRest) throws SpotifyException {
+        Song songUpdated = songUpdater.updateSong(getSongOrThrow(id), userInputSongRest);
+        return toRest(songUpdated);
     }
 
     @Override
@@ -83,18 +88,6 @@ public class SongServiceImpl implements SongService {
     }
 
 
-    private Song createToEntity(CreateSongRest createSongRest) throws NotFoundException {
-        Song song = new Song();
-        song.setName(createSongRest.getName());
-        if (createSongRest.getAlbumId() != null) {
-            song.setAlbum(getAlbumOrThrow(createSongRest.getAlbumId()));
-        }
-        if (createSongRest.getArtistId() != null) {
-            song.setArtist(getArtistOrThrow(createSongRest.getArtistId()));
-        }
-        return song;
-    }
-
     private Album getAlbumOrThrow(Long id) throws NotFoundException {
         return albumRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ALBUM));
@@ -105,10 +98,43 @@ public class SongServiceImpl implements SongService {
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ARTIST));
     }
 
-    private Song updateSongEntity(Song actualSong, CreateSongRest updatedSong) throws NotFoundException {
+    private Song createSongEntity(UserInputSongRest userInputSongRest) throws NotFoundException, DuplicateEntryException {
+        Song song = new Song();
+        song.setName(userInputSongRest.getName());
+        if (userInputSongRest.getAlbumId() != null) {
+            song.setAlbum(getAlbumOrThrow(userInputSongRest.getAlbumId()));
+        }
+        if (userInputSongRest.getArtistId() != null) {
+            song.setArtist(getArtistOrThrow(userInputSongRest.getArtistId()));
+        }
+        if (userInputSongRest.getTrackNumber() != null) {
+            song.setTrackNumber(userInputSongRest.getTrackNumber());
+            if (song.getAlbum() != null) {
+                throwExceptionIfTrackNumberIsAlreadyInAlbum(song.getAlbum(), userInputSongRest.getTrackNumber());
+            }
+        }
+        return song;
+    }
+
+
+    private Song updateSongEntity(Song actualSong, UserInputSongRest updatedSong) throws NotFoundException, DuplicateEntryException {
         if (updatedSong.getName() != null) { actualSong.setName(updatedSong.getName()); }
         if (updatedSong.getArtistId() != null) { actualSong.setArtist(getArtistOrThrow(updatedSong.getArtistId()));}
         if (updatedSong.getAlbumId() != null) { actualSong.setAlbum(getAlbumOrThrow(updatedSong.getAlbumId()));}
+        if (updatedSong.getTrackNumber() != null) {
+            if (actualSong.getAlbum() != null) {
+                throwExceptionIfTrackNumberIsAlreadyInAlbum(getAlbumOrThrow(updatedSong.getAlbumId()), updatedSong.getTrackNumber());
+            }
+            actualSong.setTrackNumber(updatedSong.getTrackNumber());
+        }
         return actualSong;
+    }
+
+    private void throwExceptionIfTrackNumberIsAlreadyInAlbum(Album album, Integer trackNumber) throws DuplicateEntryException {
+        for (Song song : album.getSongList()) {
+            if (song.getTrackNumber().equals(trackNumber)) {
+                throw new DuplicateEntryException(ExceptionConstants.MESSAGE_EXISTING_TRACK_NUMBER);
+            }
+        }
     }
 }

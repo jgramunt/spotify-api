@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jordi.spotify.controllers.AlbumController;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
-import com.jordi.spotify.json.AlbumRest;
-import com.jordi.spotify.json.album.AlbumCreateRest;
+import com.jordi.spotify.json.album.AlbumRest;
+import com.jordi.spotify.json.album.UserInputAlbumRest;
 import com.jordi.spotify.json.album.AlbumRestWithSongs;
 import com.jordi.spotify.json.album.AlbumSongRest;
 import com.jordi.spotify.services.AlbumService;
@@ -129,7 +129,7 @@ public class AlbumControllerImplTest {
     @Test
     public void createAlbumWorksFine() throws Exception {
         // given
-        AlbumCreateRest albumCreateRest = new AlbumCreateRest("Definitely Maybe");
+        UserInputAlbumRest userInputAlbumRest = new UserInputAlbumRest("Definitely Maybe");
         AlbumRest result = new AlbumRest(2L, "Definitely Maybe");
 
         // when
@@ -137,7 +137,7 @@ public class AlbumControllerImplTest {
 
         // then
         mockMvc.perform(post(appversion + "albums").contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(albumCreateRest)))
+                .content(asJsonString(userInputAlbumRest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("CREATED"))
                 .andExpect(jsonPath("$.code").value("201"))
@@ -153,7 +153,7 @@ public class AlbumControllerImplTest {
 
         //then
         mockMvc.perform(post(appversion + "albums").contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(new AlbumCreateRest())))
+                .content(asJsonString(new UserInputAlbumRest())))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.status").value("ERROR"))
                 .andExpect(jsonPath("$.code").value("409"))

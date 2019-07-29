@@ -4,12 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jordi.spotify.controllers.ArtistController;
-import com.jordi.spotify.entities.Artist;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
-import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.ArtistRest;
-import com.jordi.spotify.json.artist.ArtistCreateRest;
+import com.jordi.spotify.json.artist.ArtistRest;
+import com.jordi.spotify.json.artist.UserInputArtistRest;
 import com.jordi.spotify.services.ArtistService;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Test;
@@ -22,12 +20,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -114,7 +110,7 @@ public class ArtistControllerImplTest {
     @Test
     public void createArtistWorksFine() throws Exception {
         // given
-        ArtistCreateRest createdArtist = new ArtistCreateRest();
+        UserInputArtistRest createdArtist = new UserInputArtistRest();
         createdArtist.setName("Oasis");
         ArtistRest result = new ArtistRest(2L, "Oasis");
 
@@ -137,7 +133,7 @@ public class ArtistControllerImplTest {
         Mockito.when(artistService.createArtist(any())).thenThrow(new DuplicateEntryException(ExceptionConstants.MESSAGE_EXISTING_ARTIST));
 
         //then
-        mockMvc.perform(post(appversion + "artists").contentType(MediaType.APPLICATION_JSON).content(asJsonString(new ArtistCreateRest())))
+        mockMvc.perform(post(appversion + "artists").contentType(MediaType.APPLICATION_JSON).content(asJsonString(new UserInputArtistRest())))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.status").value("ERROR"))
                 .andExpect(jsonPath("$.code").value("409"))

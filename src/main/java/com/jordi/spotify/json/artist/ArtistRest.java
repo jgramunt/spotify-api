@@ -1,20 +1,20 @@
-package com.jordi.spotify.json;
+package com.jordi.spotify.json.artist;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AlbumRest implements Serializable {
+public class ArtistRest implements Serializable {
 
-    private static final long serialVersionUID = 948223690591677827L;
+    private static final long serialVersionUID = -870160837236964362L;
 
     private Long id;
     private String name;
 
-    public AlbumRest() {}
+    public ArtistRest(){}
 
-    public AlbumRest(Long id, String name) {
+    public ArtistRest(Long id, String name) {
         this.id = id;
         this.name = name;
     }

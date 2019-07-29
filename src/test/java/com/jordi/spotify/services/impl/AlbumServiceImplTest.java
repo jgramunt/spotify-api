@@ -6,14 +6,11 @@ import com.jordi.spotify.entities.Song;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.AlbumRest;
-import com.jordi.spotify.json.ArtistRest;
-import com.jordi.spotify.json.album.AlbumCreateRest;
+import com.jordi.spotify.json.album.AlbumRest;
+import com.jordi.spotify.json.album.UserInputAlbumRest;
 import com.jordi.spotify.json.album.AlbumRestWithSongs;
 import com.jordi.spotify.json.album.AlbumSongRest;
 import com.jordi.spotify.repositories.AlbumRepository;
-import com.jordi.spotify.services.AlbumService;
-import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -150,7 +147,7 @@ public class AlbumServiceImplTest {
     @Test
     public void createAlbumWorksFine() throws SpotifyException {
         // given
-        AlbumCreateRest albumCreateRest = new AlbumCreateRest("Let It Be");
+        UserInputAlbumRest userInputAlbumRest = new UserInputAlbumRest("Let It Be");
         Album album = new Album(2L, "Let It Be");
         AlbumRest albumRest = new AlbumRest(2L, "Let It Be");
 
@@ -158,7 +155,7 @@ public class AlbumServiceImplTest {
         Mockito.when(albumRepository.save(any(Album.class))).thenReturn(album);
 
         // then
-        AlbumRest result = albumService.createAlbum(albumCreateRest);
+        AlbumRest result = albumService.createAlbum(userInputAlbumRest);
         assertNotNull(result);
         assertEquals(albumRest.getId(), result.getId());
         assertEquals(albumRest.getName(), result.getName());
@@ -174,7 +171,7 @@ public class AlbumServiceImplTest {
         Mockito.when(albumRepository.existsByName(any())).thenReturn(true);
 
         // then
-        albumService.createAlbum(new AlbumCreateRest("Let It Be"));
+        albumService.createAlbum(new UserInputAlbumRest("Let It Be"));
     }
 
     @Test

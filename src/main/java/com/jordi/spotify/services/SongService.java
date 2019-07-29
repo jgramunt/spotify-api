@@ -1,8 +1,8 @@
 package com.jordi.spotify.services;
 
 import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.SongRest;
-import com.jordi.spotify.json.song.CreateSongRest;
+import com.jordi.spotify.json.song.SongRest;
+import com.jordi.spotify.json.song.UserInputSongRest;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ public interface SongService {
 
     SongRest getSongById(Long id) throws SpotifyException;
 
-    SongRest createSong(CreateSongRest createSongRest) throws SpotifyException;
+    SongRest createSong(UserInputSongRest userInputSongRest) throws SpotifyException;
 
-    SongRest updateSong(Long id, CreateSongRest createSongRest) throws SpotifyException;
+    SongRest updateSong(Long id, UserInputSongRest userInputSongRest) throws SpotifyException;
 
     String deleteSong(Long id) throws SpotifyException;
 

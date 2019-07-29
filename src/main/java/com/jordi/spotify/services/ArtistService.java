@@ -1,8 +1,8 @@
 package com.jordi.spotify.services;
 
 import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.ArtistRest;
-import com.jordi.spotify.json.artist.ArtistCreateRest;
+import com.jordi.spotify.json.artist.ArtistRest;
+import com.jordi.spotify.json.artist.UserInputArtistRest;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public interface ArtistService {
 
     ArtistRest findById(Long id) throws SpotifyException;
 
-    ArtistRest createArtist(ArtistCreateRest createdArtist) throws SpotifyException;
+    ArtistRest createArtist(UserInputArtistRest createdArtist) throws SpotifyException;
 
     ArtistRest updateArtist(Long id, ArtistRest updatedArtistInfoRest) throws SpotifyException;
 

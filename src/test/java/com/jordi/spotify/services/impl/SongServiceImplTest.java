@@ -3,15 +3,13 @@ package com.jordi.spotify.services.impl;
 import com.jordi.spotify.entities.Album;
 import com.jordi.spotify.entities.Artist;
 import com.jordi.spotify.entities.Song;
-import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.SongRest;
-import com.jordi.spotify.json.song.CreateSongRest;
+import com.jordi.spotify.json.song.SongRest;
+import com.jordi.spotify.json.song.UserInputSongRest;
 import com.jordi.spotify.repositories.AlbumRepository;
 import com.jordi.spotify.repositories.ArtistRepository;
 import com.jordi.spotify.repositories.SongRepository;
-import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,7 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 public class SongServiceImplTest {
 
     @Mock
-    SongRepository songRepository;
+    private SongRepository songRepository;
 
     @Mock
     private ArtistRepository artistRepository;
@@ -120,7 +118,7 @@ public class SongServiceImplTest {
     @Test
     public void createSongWorksFine() throws SpotifyException {
         // given
-        CreateSongRest createSongRest = new CreateSongRest("Mr Blue Sky");
+        UserInputSongRest userInputSongRest = new UserInputSongRest("Mr Blue Sky");
 
         Album album = new Album(1L, "Out Of The Blue");
         Artist artist = new Artist(1L, "Electric Light Orchestra");
@@ -141,7 +139,7 @@ public class SongServiceImplTest {
         Mockito.when(songRepository.save(any())).thenReturn(song);
 
         // then
-        SongRest result = songService.createSong(createSongRest);
+        SongRest result = songService.createSong(userInputSongRest);
         assertNotNull(result);
         assertEquals(songRest.getId(), result.getId());
         assertEquals(songRest.getName(), result.getName());
@@ -154,14 +152,14 @@ public class SongServiceImplTest {
         // given
         expectedException.expect(NotFoundException.class);
         expectedException.expectMessage("NONEXISTENT ALBUM - Album does not exist");
-        CreateSongRest createSongRest = new CreateSongRest("Mr Blue Sky");
-        createSongRest.setAlbumId(1L);
+        UserInputSongRest userInputSongRest = new UserInputSongRest("Mr Blue Sky");
+        userInputSongRest.setAlbumId(1L);
 
         // when
         Mockito.when(albumRepository.findById(any())).thenReturn(Optional.empty());
 
         // then
-        songService.createSong(createSongRest);
+        songService.createSong(userInputSongRest);
     }
 
     @Test
@@ -169,23 +167,23 @@ public class SongServiceImplTest {
         // given
         expectedException.expect(NotFoundException.class);
         expectedException.expectMessage("NONEXISTENT ARTIST - Artist does not exist");
-        CreateSongRest createSongRest = new CreateSongRest("Mr Blue Sky");
-        createSongRest.setArtistId(1L);
+        UserInputSongRest userInputSongRest = new UserInputSongRest("Mr Blue Sky");
+        userInputSongRest.setArtistId(1L);
 
         // when
         Mockito.when(artistRepository.findById(any())).thenReturn(Optional.empty());
 
         // then
-        songService.createSong(createSongRest);
+        songService.createSong(userInputSongRest);
     }
 
     @Test
     public void updateSong() throws SpotifyException {
         // given
-        CreateSongRest createSongRest = new CreateSongRest();
-        createSongRest.setName("Mr Blue Sky");
-        createSongRest.setAlbumId(2L);
-        createSongRest.setArtistId(2L);
+        UserInputSongRest userInputSongRest = new UserInputSongRest();
+        userInputSongRest.setName("Mr Blue Sky");
+        userInputSongRest.setAlbumId(2L);
+        userInputSongRest.setArtistId(2L);
 
         Album album = new Album(2L, "Out Of The Blue");
         Artist artist = new Artist(2L, "Electric Light Orchestra");
@@ -204,7 +202,7 @@ public class SongServiceImplTest {
         Mockito.when(artistRepository.findById(2L)).thenReturn(Optional.of(artist));
 
         // then
-        SongRest result = songService.updateSong(1L, createSongRest);
+        SongRest result = songService.updateSong(1L, userInputSongRest);
         assertNotNull(result);
         assertEquals(songRest.getId(), result.getId());
         assertEquals(songRest.getName(), result.getName());

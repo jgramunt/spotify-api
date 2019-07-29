@@ -1,4 +1,4 @@
-package com.jordi.spotify.json;
+package com.jordi.spotify.json.song;
 
 import java.io.Serializable;
 

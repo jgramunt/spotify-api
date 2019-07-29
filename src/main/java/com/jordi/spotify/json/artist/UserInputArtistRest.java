@@ -5,15 +5,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ArtistCreateRest implements Serializable {
+public class UserInputArtistRest implements Serializable {
 
     private static final long serialVersionUID = -5315177547027094619L;
 
     private String name;
 
-    public ArtistCreateRest(){}
+    public UserInputArtistRest(){}
 
-    public ArtistCreateRest(String name) {
+    public UserInputArtistRest(String name) {
         this.name = name;
     }
 

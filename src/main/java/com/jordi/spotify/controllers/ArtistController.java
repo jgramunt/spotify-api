@@ -1,8 +1,8 @@
 package com.jordi.spotify.controllers;
 
 import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.ArtistRest;
-import com.jordi.spotify.json.artist.ArtistCreateRest;
+import com.jordi.spotify.json.artist.ArtistRest;
+import com.jordi.spotify.json.artist.UserInputArtistRest;
 import com.jordi.spotify.responses.SpotifyResponse;
 
 import java.net.URISyntaxException;
@@ -14,7 +14,7 @@ public interface ArtistController {
 
     SpotifyResponse<ArtistRest> getArtistById(Long id) throws SpotifyException;
 
-    SpotifyResponse<ArtistRest> createArtist(ArtistCreateRest artistCreateRest) throws SpotifyException, URISyntaxException;
+    SpotifyResponse<ArtistRest> createArtist(UserInputArtistRest userInputArtistRest) throws SpotifyException, URISyntaxException;
 
     SpotifyResponse<ArtistRest> updateArtist(Long id, ArtistRest updatedArtistInfo) throws SpotifyException;
 
