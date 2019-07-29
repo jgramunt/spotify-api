@@ -2,8 +2,8 @@ package com.jordi.spotify.controllers.impl;
 
 import com.jordi.spotify.controllers.SongController;
 import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.SongRest;
-import com.jordi.spotify.json.song.CreateSongRest;
+import com.jordi.spotify.json.song.SongRest;
+import com.jordi.spotify.json.song.UserInputSongRest;
 import com.jordi.spotify.responses.SpotifyResponse;
 import com.jordi.spotify.services.SongService;
 import com.jordi.spotify.utils.constants.CommonConstants;
@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController
@@ -42,17 +41,17 @@ public class SongControllerImpl implements SongController {
     @Override
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public SpotifyResponse<SongRest> createSong(@RequestBody CreateSongRest createSongRest) throws SpotifyException {
+    public SpotifyResponse<SongRest> createSong(@RequestBody UserInputSongRest userInputSongRest) throws SpotifyException {
         return new SpotifyResponse<>(CommonConstants.CREATED, String.valueOf(HttpStatus.CREATED.value()), CommonConstants.SUCCESS,
-                songService.createSong(createSongRest));
+                songService.createSong(userInputSongRest));
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value = RestConstants.RESOURCE_ID)
-    public SpotifyResponse<SongRest> updateSong(@PathVariable Long id, @RequestBody CreateSongRest createSongRest) throws SpotifyException {
+    public SpotifyResponse<SongRest> updateSong(@PathVariable Long id, @RequestBody UserInputSongRest userInputSongRest) throws SpotifyException {
         return new SpotifyResponse<>(CommonConstants.OK, String.valueOf(HttpStatus.OK.value()), CommonConstants.SUCCESS,
-                songService.updateSong(id, createSongRest));
+                songService.updateSong(id, userInputSongRest));
     }
 
     @Override

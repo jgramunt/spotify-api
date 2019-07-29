@@ -1,20 +1,23 @@
-package com.jordi.spotify.utils.updaters;
+package com.jordi.spotify.services.updaters;
 
 import com.jordi.spotify.entities.Album;
 import com.jordi.spotify.entities.Artist;
 import com.jordi.spotify.entities.Song;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
-import com.jordi.spotify.json.song.CreateSongRest;
+import com.jordi.spotify.json.song.UserInputSongRest;
 import com.jordi.spotify.repositories.AlbumRepository;
 import com.jordi.spotify.repositories.ArtistRepository;
+import com.jordi.spotify.repositories.SongRepository;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SongUpdater {
 
-    private Song actualSong;
-    private CreateSongRest updatedSong;
+    @Autowired
+    private SongRepository songRepository;
 
     @Autowired
     private ArtistRepository artistRepository;
@@ -22,21 +25,20 @@ public class SongUpdater {
     @Autowired
     private AlbumRepository albumRepository;
 
-    public SongUpdater(Song actualSong, CreateSongRest updatedSong) {
+    private Song actualSong;
+    private UserInputSongRest updatedSong;
+
+
+    public Song updateSong(Song actualSong, UserInputSongRest updatedSong) throws NotFoundException, DuplicateEntryException {
         this.actualSong = actualSong;
         this.updatedSong = updatedSong;
-    }
-
-    public Song returnUpdatedSongEntity() throws NotFoundException, DuplicateEntryException {
-        updateSong();
-        return actualSong;
-    }
-
-    private void updateSong() throws NotFoundException, DuplicateEntryException {
         updateName();
         updateArtist();
         updateAlbum();
         updateTrackNumber();
+        songRepository.save(actualSong);
+        return actualSong;
+
     }
 
     private void updateName() {

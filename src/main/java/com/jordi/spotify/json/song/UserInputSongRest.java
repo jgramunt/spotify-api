@@ -2,7 +2,7 @@ package com.jordi.spotify.json.song;
 
 import java.io.Serializable;
 
-public class CreateSongRest implements Serializable {
+public class UserInputSongRest implements Serializable {
 
     private static final long serialVersionUID = 7939466948855144972L;
 
@@ -11,9 +11,9 @@ public class CreateSongRest implements Serializable {
     private Long albumId;
     private Integer trackNumber;
 
-    public CreateSongRest() {}
+    public UserInputSongRest() {}
 
-    public CreateSongRest(String name) { this.name = name; }
+    public UserInputSongRest(String name) { this.name = name; }
 
     public String getName() { return name; }
 

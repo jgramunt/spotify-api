@@ -2,8 +2,8 @@ package com.jordi.spotify.controllers.impl;
 
 import com.jordi.spotify.controllers.ArtistController;
 import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.ArtistRest;
-import com.jordi.spotify.json.artist.ArtistCreateRest;
+import com.jordi.spotify.json.artist.ArtistRest;
+import com.jordi.spotify.json.artist.UserInputArtistRest;
 import com.jordi.spotify.responses.SpotifyResponse;
 import com.jordi.spotify.services.ArtistService;
 import com.jordi.spotify.utils.constants.CommonConstants;
@@ -42,9 +42,9 @@ public class ArtistControllerImpl implements ArtistController {
     @Override
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public SpotifyResponse<ArtistRest> createArtist(@RequestHeader @RequestBody @Valid ArtistCreateRest artistCreateRest) throws SpotifyException {
+    public SpotifyResponse<ArtistRest> createArtist(@RequestHeader @RequestBody @Valid UserInputArtistRest userInputArtistRest) throws SpotifyException {
         return new SpotifyResponse<>(CommonConstants.CREATED, String.valueOf(HttpStatus.CREATED.value()), CommonConstants.SUCCESS,
-                artistService.createArtist(artistCreateRest));
+                artistService.createArtist(userInputArtistRest));
     }
 
     @Override

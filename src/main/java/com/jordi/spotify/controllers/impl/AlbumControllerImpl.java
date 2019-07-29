@@ -2,8 +2,8 @@ package com.jordi.spotify.controllers.impl;
 
 import com.jordi.spotify.controllers.AlbumController;
 import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.AlbumRest;
-import com.jordi.spotify.json.album.AlbumCreateRest;
+import com.jordi.spotify.json.album.AlbumRest;
+import com.jordi.spotify.json.album.UserInputAlbumRest;
 import com.jordi.spotify.json.album.AlbumRestWithSongs;
 import com.jordi.spotify.responses.SpotifyResponse;
 import com.jordi.spotify.services.AlbumService;
@@ -43,9 +43,9 @@ public class AlbumControllerImpl implements AlbumController {
     @Override
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public SpotifyResponse<AlbumRest> createAlbum(@RequestBody @Valid AlbumCreateRest albumCreateRest) throws SpotifyException {
+    public SpotifyResponse<AlbumRest> createAlbum(@RequestBody @Valid UserInputAlbumRest userInputAlbumRest) throws SpotifyException {
         return new SpotifyResponse<>(CommonConstants.CREATED, String.valueOf(HttpStatus.CREATED.value()), CommonConstants.SUCCESS,
-                albumService.createAlbum(albumCreateRest));
+                albumService.createAlbum(userInputAlbumRest));
     }
 
     @Override

@@ -6,8 +6,8 @@ import com.jordi.spotify.entities.Song;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.AlbumRest;
-import com.jordi.spotify.json.album.AlbumCreateRest;
+import com.jordi.spotify.json.album.AlbumRest;
+import com.jordi.spotify.json.album.UserInputAlbumRest;
 import com.jordi.spotify.json.album.AlbumRestWithSongs;
 import com.jordi.spotify.json.album.AlbumSongRest;
 import com.jordi.spotify.repositories.AlbumRepository;
@@ -38,11 +38,11 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public AlbumRest createAlbum(AlbumCreateRest albumCreateRest) throws SpotifyException {
-        if (albumRepository.existsByName(albumCreateRest.getName())) {
+    public AlbumRest createAlbum(UserInputAlbumRest userInputAlbumRest) throws SpotifyException {
+        if (albumRepository.existsByName(userInputAlbumRest.getName())) {
             throw new DuplicateEntryException(ExceptionConstants.MESSAGE_EXISTING_ALBUM);
         }
-        Album savedEntity = albumRepository.save(createRestToEntity(albumCreateRest));
+        Album savedEntity = albumRepository.save(createRestToEntity(userInputAlbumRest));
         return toRest(savedEntity);
     }
 
@@ -97,9 +97,9 @@ public class AlbumServiceImpl implements AlbumService {
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ALBUM));
     }
 
-    private Album createRestToEntity(AlbumCreateRest albumCreateRest) {
+    private Album createRestToEntity(UserInputAlbumRest userInputAlbumRest) {
         Album album = new Album();
-        album.setName(albumCreateRest.getName());
+        album.setName(userInputAlbumRest.getName());
         return album;
     }
 

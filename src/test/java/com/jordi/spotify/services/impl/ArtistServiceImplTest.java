@@ -4,8 +4,8 @@ import com.jordi.spotify.entities.Artist;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
 import com.jordi.spotify.exceptions.SpotifyException;
-import com.jordi.spotify.json.ArtistRest;
-import com.jordi.spotify.json.artist.ArtistCreateRest;
+import com.jordi.spotify.json.artist.ArtistRest;
+import com.jordi.spotify.json.artist.UserInputArtistRest;
 import com.jordi.spotify.repositories.ArtistRepository;
 import org.junit.Before;
 import org.junit.Rule;
@@ -108,8 +108,8 @@ public class ArtistServiceImplTest {
     @Test
     public void createArtistShouldBeOk() throws SpotifyException {
         // given
-        ArtistCreateRest artistCreateRest = new ArtistCreateRest();
-        artistCreateRest.setName("Oasis");
+        UserInputArtistRest userInputArtistRest = new UserInputArtistRest();
+        userInputArtistRest.setName("Oasis");
 
         Artist artist = new Artist(2L, "Oasis");
 
@@ -117,10 +117,10 @@ public class ArtistServiceImplTest {
         Mockito.when(artistRepository.save(Mockito.any(Artist.class))).thenReturn(artist);
 
         // then
-        ArtistRest result = artistService.createArtist(artistCreateRest);
+        ArtistRest result = artistService.createArtist(userInputArtistRest);
         assertNotNull(result);
         assertNotNull(result.getId());
-        assertEquals(artistCreateRest.getName(), result.getName());
+        assertEquals(userInputArtistRest.getName(), result.getName());
     }
 
     @Test
@@ -134,7 +134,7 @@ public class ArtistServiceImplTest {
         Mockito.when(artistRepository.existsByName(any(String.class))).thenReturn(true);
 
         // then
-        artistService.createArtist(new ArtistCreateRest("Oasis"));
+        artistService.createArtist(new UserInputArtistRest("Oasis"));
     }
 
     @Test
