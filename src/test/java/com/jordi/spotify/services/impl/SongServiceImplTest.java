@@ -178,39 +178,6 @@ public class SongServiceImplTest {
     }
 
     @Test
-    public void updateSong() throws SpotifyException {
-        // given
-        UserInputSongRest userInputSongRest = new UserInputSongRest();
-        userInputSongRest.setName("Mr Blue Sky");
-        userInputSongRest.setAlbumId(2L);
-        userInputSongRest.setArtistId(2L);
-
-        Album album = new Album(2L, "Out Of The Blue");
-        Artist artist = new Artist(2L, "Electric Light Orchestra");
-
-        Song songToUpdate = new Song(1L, "Hotel California");
-
-        SongRest songRest = new SongRest();
-        songRest.setId(1L);
-        songRest.setName("Mr Blue Sky");
-        songRest.setArtistName("Electric Light Orchestra");
-        songRest.setAlbumName("Out Of The Blue");
-
-        //when
-        Mockito.when(songRepository.findById(1L)).thenReturn(Optional.of(songToUpdate));
-        Mockito.when(albumRepository.findById(2L)).thenReturn(Optional.of(album));
-        Mockito.when(artistRepository.findById(2L)).thenReturn(Optional.of(artist));
-
-        // then
-        SongRest result = songService.updateSong(1L, userInputSongRest);
-        assertNotNull(result);
-        assertEquals(songRest.getId(), result.getId());
-        assertEquals(songRest.getName(), result.getName());
-        assertEquals(songRest.getAlbumName(), result.getAlbumName());
-        assertEquals(songRest.getArtistName(), result.getArtistName());
-    }
-
-    @Test
     public void deleteSongWorksFine() throws SpotifyException {
         // when
         Mockito.when(songRepository.findById(1L)).thenReturn(Optional.of(new Song()));

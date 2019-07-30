@@ -5,6 +5,7 @@ import com.jordi.spotify.entities.Artist;
 import com.jordi.spotify.entities.Song;
 import com.jordi.spotify.exceptions.DuplicateEntryException;
 import com.jordi.spotify.exceptions.NotFoundException;
+import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.song.UserInputSongRest;
 import com.jordi.spotify.repositories.AlbumRepository;
 import com.jordi.spotify.repositories.ArtistRepository;
@@ -29,7 +30,7 @@ public class SongUpdater {
     private UserInputSongRest updatedSong;
 
 
-    public Song updateSong(Song actualSong, UserInputSongRest updatedSong) throws NotFoundException, DuplicateEntryException {
+    public Song updateSong(Song actualSong, UserInputSongRest updatedSong) throws SpotifyException {
         this.actualSong = actualSong;
         this.updatedSong = updatedSong;
         updateName();
