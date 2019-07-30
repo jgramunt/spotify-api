@@ -54,7 +54,7 @@ public class SongServiceImpl implements SongService {
     @Override
     public SongRest updateSong(Long id, UserInputSongRest userInputSongRest) throws SpotifyException {
         Song songUpdated = songUpdater.updateSong(getSongOrThrow(id), userInputSongRest);
-        return toRest(songUpdated);
+        return toRest(songRepository.save(songUpdated));
     }
 
     @Override

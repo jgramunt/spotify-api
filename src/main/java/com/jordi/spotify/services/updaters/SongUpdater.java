@@ -37,7 +37,6 @@ public class SongUpdater {
         updateArtist();
         updateAlbum();
         updateTrackNumber();
-        songRepository.save(actualSong);
         return actualSong;
 
     }
