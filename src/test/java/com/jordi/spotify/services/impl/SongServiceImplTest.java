@@ -10,6 +10,7 @@ import com.jordi.spotify.json.song.UserInputSongRest;
 import com.jordi.spotify.repositories.AlbumRepository;
 import com.jordi.spotify.repositories.ArtistRepository;
 import com.jordi.spotify.repositories.SongRepository;
+import com.jordi.spotify.utils.converters.UserInputRestToSongEntityConverter;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,6 +40,8 @@ public class SongServiceImplTest {
     @Mock
     private AlbumRepository albumRepository;
 
+    @Mock
+    private UserInputRestToSongEntityConverter userInputRestToSongEntityConverter;
 
     @InjectMocks
     SongServiceImpl songService;
@@ -134,8 +137,6 @@ public class SongServiceImplTest {
         songRest.setArtistName("Electric Light Orchestra");
 
         // when
-        Mockito.when(albumRepository.findById(1L)).thenReturn(Optional.of(album));
-        Mockito.when(artistRepository.findById(1L)).thenReturn(Optional.of(artist));
         Mockito.when(songRepository.save(any())).thenReturn(song);
 
         // then
@@ -145,36 +146,6 @@ public class SongServiceImplTest {
         assertEquals(songRest.getName(), result.getName());
         assertEquals(songRest.getAlbumName(), result.getAlbumName());
         assertEquals(songRest.getArtistName(), result.getArtistName());
-    }
-
-    @Test
-    public void createSongAlbumNotFound() throws SpotifyException {
-        // given
-        expectedException.expect(NotFoundException.class);
-        expectedException.expectMessage("NONEXISTENT ALBUM - Album does not exist");
-        UserInputSongRest userInputSongRest = new UserInputSongRest("Mr Blue Sky");
-        userInputSongRest.setAlbumId(1L);
-
-        // when
-        Mockito.when(albumRepository.findById(any())).thenReturn(Optional.empty());
-
-        // then
-        songService.createSong(userInputSongRest);
-    }
-
-    @Test
-    public void createSongArtistNotFound() throws SpotifyException {
-        // given
-        expectedException.expect(NotFoundException.class);
-        expectedException.expectMessage("NONEXISTENT ARTIST - Artist does not exist");
-        UserInputSongRest userInputSongRest = new UserInputSongRest("Mr Blue Sky");
-        userInputSongRest.setArtistId(1L);
-
-        // when
-        Mockito.when(artistRepository.findById(any())).thenReturn(Optional.empty());
-
-        // then
-        songService.createSong(userInputSongRest);
     }
 
     @Test

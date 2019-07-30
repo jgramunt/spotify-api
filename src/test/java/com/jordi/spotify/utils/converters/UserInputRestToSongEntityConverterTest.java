@@ -1,4 +1,4 @@
-package com.jordi.spotify.services.updaters;
+package com.jordi.spotify.utils.converters;
 
 import com.jordi.spotify.entities.Album;
 import com.jordi.spotify.entities.Artist;
@@ -9,8 +9,6 @@ import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.song.UserInputSongRest;
 import com.jordi.spotify.repositories.AlbumRepository;
 import com.jordi.spotify.repositories.ArtistRepository;
-import com.jordi.spotify.repositories.SongRepository;
-import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,20 +18,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @SpringBootTest
-public class SongUpdaterTest {
-
-    @Mock
-    SongRepository songRepository;
+public class UserInputRestToSongEntityConverterTest {
 
     @Mock
     ArtistRepository artistRepository;
@@ -42,16 +36,50 @@ public class SongUpdaterTest {
     AlbumRepository albumRepository;
 
     @InjectMocks
-    SongUpdater songUpdater;
+    UserInputRestToSongEntityConverter converter;
 
     @Before
-    public void init() { MockitoAnnotations.initMocks(this); }
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void updateSongWorksFine() throws SpotifyException {
+    public void createSongEntityWorksFine() throws SpotifyException {
+        // given
+        UserInputSongRest userInputSongRest = new UserInputSongRest();
+        userInputSongRest.setName("Mr Blue Sky");
+        userInputSongRest.setAlbumId(2L);
+        userInputSongRest.setArtistId(2L);
+        userInputSongRest.setTrackNumber(1);
+
+        Album album = new Album(2L, "Out Of The Blue");
+        album.setSongList(new ArrayList<>());
+        Artist artist = new Artist(2L, "Electric Light Orchestra");
+
+        Song song = new Song();
+        song.setName("Mr Blue Sky");
+        song.setArtist(artist);
+        song.setAlbum(album);
+        song.setTrackNumber(1);
+
+        //when
+        Mockito.when(albumRepository.findById(2L)).thenReturn(Optional.of(album));
+        Mockito.when(artistRepository.findById(2L)).thenReturn(Optional.of(artist));
+
+        // then
+        Song result = converter.convertSong(userInputSongRest);
+        assertNotNull(result);
+        assertEquals(song.getName(), result.getName());
+        assertEquals(song.getAlbum(), result.getAlbum());
+        assertEquals(song.getArtist(), result.getArtist());
+        assertEquals(song.getTrackNumber(), result.getTrackNumber());
+    }
+
+    @Test
+    public void updateSongEntityWorksFine() throws SpotifyException {
         // given
         UserInputSongRest userInputSongRest = new UserInputSongRest();
         userInputSongRest.setName("Mr Blue Sky");
@@ -75,10 +103,9 @@ public class SongUpdaterTest {
         //when
         Mockito.when(albumRepository.findById(2L)).thenReturn(Optional.of(album));
         Mockito.when(artistRepository.findById(2L)).thenReturn(Optional.of(artist));
-        Mockito.when(songRepository.save(any())).thenReturn(any(Song.class));
 
         // then
-        Song result = songUpdater.updateSong(songToUpdate, userInputSongRest);
+        Song result = converter.convertSong(songToUpdate, userInputSongRest);
         assertNotNull(result);
         assertEquals(song.getId(), result.getId());
         assertEquals(song.getName(), result.getName());
@@ -101,7 +128,7 @@ public class SongUpdaterTest {
         Mockito.when(artistRepository.findById(2L)).thenReturn(Optional.empty());
 
         // then
-        songUpdater.updateSong(songToUpdate, userInputSongRest);
+        converter.convertSong(songToUpdate, userInputSongRest);
     }
 
     @Test
@@ -118,7 +145,7 @@ public class SongUpdaterTest {
         Mockito.when(albumRepository.findById(2L)).thenReturn(Optional.empty());
 
         // then
-        songUpdater.updateSong(songToUpdate, userInputSongRest);
+        converter.convertSong(songToUpdate, userInputSongRest);
     }
 
     @Test
@@ -143,7 +170,7 @@ public class SongUpdaterTest {
         Mockito.when(albumRepository.findById(1L)).thenReturn(Optional.of(album));
 
         // then
-        songUpdater.updateSong(songToUpdate, userInputSongRest);
+        converter.convertSong(songToUpdate, userInputSongRest);
 
     }
 }

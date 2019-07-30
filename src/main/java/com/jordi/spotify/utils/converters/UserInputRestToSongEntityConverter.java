@@ -1,4 +1,5 @@
-package com.jordi.spotify.services.updaters;
+package com.jordi.spotify.utils.converters;
+
 
 import com.jordi.spotify.entities.Album;
 import com.jordi.spotify.entities.Artist;
@@ -9,16 +10,12 @@ import com.jordi.spotify.exceptions.SpotifyException;
 import com.jordi.spotify.json.song.UserInputSongRest;
 import com.jordi.spotify.repositories.AlbumRepository;
 import com.jordi.spotify.repositories.ArtistRepository;
-import com.jordi.spotify.repositories.SongRepository;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SongUpdater {
-
-    @Autowired
-    private SongRepository songRepository;
+public class UserInputRestToSongEntityConverter {
 
     @Autowired
     private ArtistRepository artistRepository;
@@ -26,30 +23,38 @@ public class SongUpdater {
     @Autowired
     private AlbumRepository albumRepository;
 
-    private Song actualSong;
-    private UserInputSongRest updatedSong;
+    private Song returnSong;
+    private UserInputSongRest songRest;
 
-
-    public Song updateSong(Song actualSong, UserInputSongRest updatedSong) throws SpotifyException {
-        this.actualSong = actualSong;
-        this.updatedSong = updatedSong;
-        updateName();
-        updateArtist();
-        updateAlbum();
-        updateTrackNumber();
+    public Song convertSong(Song actualSong, UserInputSongRest songRest) throws SpotifyException {
+        this.returnSong = actualSong;
+        this.songRest = songRest;
+        convertName();
+        convertArtist();
+        convertAlbum();
+        convertTrackNumber();
         return actualSong;
-
     }
 
-    private void updateName() {
-        if (updatedSong.getName() != null) {
-            actualSong.setName(updatedSong.getName());
+    public Song convertSong(UserInputSongRest updatedSong) throws SpotifyException {
+        this.returnSong = new Song();
+        this.songRest = updatedSong;
+        convertName();
+        convertArtist();
+        convertAlbum();
+        convertTrackNumber();
+        return returnSong;
+    }
+
+    private void convertName() {
+        if (songRest.getName() != null) {
+            returnSong.setName(songRest.getName());
         }
     }
 
-    private void updateArtist() throws NotFoundException {
-        if (updatedSong.getArtistId() != null) {
-            actualSong.setArtist(getArtistOrThrow(updatedSong.getArtistId()));
+    private void convertArtist() throws NotFoundException {
+        if (songRest.getArtistId() != null) {
+            returnSong.setArtist(getArtistOrThrow(songRest.getArtistId()));
         }
     }
 
@@ -58,9 +63,9 @@ public class SongUpdater {
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ARTIST));
     }
 
-    private void updateAlbum() throws NotFoundException {
-        if (updatedSong.getAlbumId() != null) {
-            actualSong.setAlbum(getAlbumOrThrow(updatedSong.getAlbumId()));
+    private void convertAlbum() throws NotFoundException {
+        if (songRest.getAlbumId() != null) {
+            returnSong.setAlbum(getAlbumOrThrow(songRest.getAlbumId()));
         }
     }
 
@@ -69,12 +74,12 @@ public class SongUpdater {
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_NONEXISTENT_ALBUM));
     }
 
-    private void updateTrackNumber() throws DuplicateEntryException {
-        if (updatedSong.getTrackNumber() != null) {
-            actualSong.setTrackNumber(updatedSong.getTrackNumber());
+    private void convertTrackNumber() throws DuplicateEntryException {
+        if (songRest.getTrackNumber() != null) {
+            returnSong.setTrackNumber(songRest.getTrackNumber());
         }
-        if (actualSong.getAlbum() != null) {
-            throwExceptionIfTrackNumberIsAlreadyInAlbum(actualSong.getAlbum(), actualSong.getTrackNumber());
+        if (returnSong.getAlbum() != null) {
+            throwExceptionIfTrackNumberIsAlreadyInAlbum(returnSong.getAlbum(), returnSong.getTrackNumber());
         }
     }
 
@@ -85,5 +90,4 @@ public class SongUpdater {
             }
         }
     }
-
 }

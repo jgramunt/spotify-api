@@ -12,8 +12,8 @@ import com.jordi.spotify.repositories.AlbumRepository;
 import com.jordi.spotify.repositories.ArtistRepository;
 import com.jordi.spotify.repositories.SongRepository;
 import com.jordi.spotify.services.SongService;
+import com.jordi.spotify.utils.converters.UserInputRestToSongEntityConverter;
 import com.jordi.spotify.utils.constants.ExceptionConstants;
-import com.jordi.spotify.services.updaters.SongUpdater;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +33,8 @@ public class SongServiceImpl implements SongService {
     private AlbumRepository albumRepository;
 
     @Autowired
-    private SongUpdater songUpdater;
+    private UserInputRestToSongEntityConverter userInputRestToSongEntityConverter;
+
 
     @Override
     public List<SongRest> getSongs() throws SpotifyException {
@@ -47,13 +48,13 @@ public class SongServiceImpl implements SongService {
 
     @Override
     public SongRest createSong(UserInputSongRest userInputSongRest) throws SpotifyException {
-        Song newSong = createSongEntity(userInputSongRest);
+        Song newSong = userInputRestToSongEntityConverter.convertSong(userInputSongRest);
         return toRest(songRepository.save(newSong));
     }
 
     @Override
     public SongRest updateSong(Long id, UserInputSongRest userInputSongRest) throws SpotifyException {
-        Song songUpdated = songUpdater.updateSong(getSongOrThrow(id), userInputSongRest);
+        Song songUpdated = userInputRestToSongEntityConverter.convertSong(getSongOrThrow(id), userInputSongRest);
         return toRest(songRepository.save(songUpdated));
     }
 
